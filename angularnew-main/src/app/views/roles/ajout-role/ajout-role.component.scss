@@ -1,0 +1,11 @@
+/* add-role.component.css */
+.permission-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.permission-list .btn.active {
+  background-color: #007bff; /* Example active button color */
+  color: white;
+}

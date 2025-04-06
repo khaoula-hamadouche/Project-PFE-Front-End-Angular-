@@ -1,0 +1,66 @@
+<c-row>
+            <c-col xs>
+              <c-card class="mb-4">
+                <c-card-body>
+                  <div class="d-flex justify-content-between mb-3">
+                    <h5 class="mb-0">Gestion des emails Envoyes</h5>
+                    <input type="text" class="form-control w-25" placeholder="Rechercher..." >
+                  </div>
+                  <table
+                    [hover]="true"
+                    [responsive]="true"
+                    [striped]="true"
+                    align="middle"
+                    cTable
+                    class="mb-0 border"
+                  >
+                    <thead class="text-nowrap text-truncate">
+                    <tr>
+                      <th class="bg-body-tertiary text-center ">
+                        <svg cIcon name="cilPeople"></svg>
+                      </th>
+                      <th class="bg-body-tertiary">Utilisateurs</th>
+                      <th class="bg-body-tertiary ">Objet</th>
+                      <th class="bg-body-tertiary">Description</th>
+                      <th class="bg-body-tertiary">piece jointe</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                      @for (email of emails; track email.content; let i = $index) {
+                        <tr>
+                          <td class="text-center">
+                            {{ email.id }}
+                          </td>
+                          <td>
+                            
+                            <div><b>A</b> : {{ email.recipient }}</div>
+                            <div class="small text-body-secondary text-nowrap">
+                            <span>
+                              {{ email.sentAt }}
+                            </span>
+                            </div>
+                          </td>
+                         
+                          <td>
+                            <div>{{ email.subject }}</div>
+                            
+                            
+                          </td>
+                          <td class="text-center">
+                            <div>{{ email.content }}</div> 
+                          </td>
+                          <td class="text-truncate text-center">
+                            <button *ngIf="email.attachmentPath" class="btn btn-primary btn-sm"
+                                    (click)="openAttachment(email.attachmentPath)">
+                              Voir
+                            </button>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </c-card-body>
+              </c-card>
+            </c-col>
+          </c-row>
+          

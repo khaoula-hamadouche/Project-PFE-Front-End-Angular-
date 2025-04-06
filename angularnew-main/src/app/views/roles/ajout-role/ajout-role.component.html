@@ -1,0 +1,37 @@
+<div class="container mt-5">
+  <h2>Ajouter un Rôle</h2>
+
+  <form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nom du Rôle:</label>
+      <input type="text" class="form-control" id="name" formControlName="name">
+      <div *ngIf="roleForm.get('name')?.invalid && (roleForm.get('name')?.dirty || roleForm.get('name')?.touched)" class="text-danger">
+        <div *ngIf="roleForm.get('name')?.errors?.['required']">
+          Le nom du rôle est obligatoire.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Permissions:</label>
+      <div class="list-group">
+        <button
+          type="button"
+          class="list-group-item list-group-item-action"
+          *ngFor="let permission of allPermissions"
+          (click)="togglePermission(permission)"
+          [class.active]="isSelected(permission)"
+        >
+          {{ permission.name }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="roleForm.invalid || allPermissions.length === 0">
+      Ajouter Rôle
+    </button>
+  </form>
+</div>
