@@ -1,41 +1,22 @@
-<div class="d-flex justify-content-between mb-3">
-  <h5 class="mb-0">Gestion des Dossiers</h5>
-  <input type="text" class="form-control w-25" placeholder="Rechercher..." >
+<div class="location-form">
+  <div>
+    <label for="country">Pays :</label>
+    <input type="text" id="country" [(ngModel)]="country">
+  </div>
+
+  <div>
+    <label for="city">Ville :</label>
+    <input type="text" id="city" [(ngModel)]="city">
+  </div>
+
+  <button (click)="callApiWithLocation()">Tester l'API avec la localisation</button>
+
+  <div *ngIf="apiResponse" class="api-response-container">
+    <h3>Réponse de l'API :</h3>
+    <pre>{{ apiResponse | json }}</pre>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    <p>Erreur : {{ errorMessage }}</p>
+  </div>
 </div>
-<table class="styled-table">
-  <thead>
-  <tr>
-    <th>Numéro Dossier</th>
-    <th>Intitulé</th>
-    <th>Type Passation</th>
-    <th>Date Soumission</th>
-    <th>État</th>
-    <th>Nom de l'utilisateur</th> <th>Fichiers</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let item of dossiers; let i = index">
-    <td>{{ item.dossier?.numeroDossier || 'N/A' }}</td>
-    <td>{{ item.dossier?.intitule || 'N/A' }}</td>
-    <td>{{ item.dossier?.typePassation || 'N/A' }}</td>
-    <td>{{ formatDate(item.dossier?.dateSoumission) || 'N/A' }}</td>
-    <td>
-      <span class="badge" [ngClass]="getEtatClass(item.dossier?.etat)">
-        {{ item.dossier?.etat || 'N/A' }}
-      </span>
-    </td>
-    <td>{{ getAddedByUserName(item) }}</td> <td>
-    <div class="file-list" *ngIf="item.fileDetails; else noFiles">
-      <button *ngFor="let fileName of getFilesNames(item.fileDetails)"
-              (click)="openFile(item.fileDetails[fileName])"
-              class="file-btn">
-        📂 {{ fileName }} <br>
-      </button>
-    </div>
-    <ng-template #noFiles>
-      <span class="no-file">Aucun fichier</span>
-    </ng-template>
-  </td>
-  </tr>
-  </tbody>
-</table>

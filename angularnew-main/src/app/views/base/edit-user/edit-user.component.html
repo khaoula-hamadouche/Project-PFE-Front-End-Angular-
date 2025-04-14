@@ -49,6 +49,13 @@
         {{ role }}
         <button matChipRemove><mat-icon>cancel</mat-icon></button>
       </mat-chip-row>
+      <!-- Input requis pour éviter l’erreur, même si non utilisé -->
+      <input
+        [matChipInputFor]="chipGrid"
+        [matChipInputAddOnBlur]="false"
+        [matChipInputSeparatorKeyCodes]="[]"
+        style="display: none"
+      />
     </mat-chip-grid>
   </div>
 

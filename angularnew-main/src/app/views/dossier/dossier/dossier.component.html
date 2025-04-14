@@ -3,10 +3,15 @@
     <c-card class="mb-4 shadow-sm">
       <c-card-body>
 
-        <!-- Barre de recherche -->
         <div class="d-flex justify-content-between mb-3">
-          <h5 class="mb-0">Gestion des Dossiers</h5>
-          <input type="text" class="form-control w-25" placeholder="Rechercher..." (keyup)="onSearch($event)">
+          <h5 class="mb-0">Gestion des dossiers</h5>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-primary" (click)="generatePdfReport()">
+              <svg cIcon name="cilPrint"></svg> Rapport Général
+            </button>
+
+          </div>
         </div>
 
         <!-- Tableau Ag-Grid -->

@@ -1,37 +1,50 @@
-<div class="container mt-5">
-  <h2>Ajouter un Rôle</h2>
+<div class="container role-form-container">
+  <form [formGroup]="roleForm" (ngSubmit)="submitRole()" class="role-form">
+    <h3 class="role-form-title">Ajouter un rôle</h3>
 
-  <form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
-    <div class="mb-3">
-      <label for="name" class="form-label">Nom du Rôle:</label>
-      <input type="text" class="form-control" id="name" formControlName="name">
-      <div *ngIf="roleForm.get('name')?.invalid && (roleForm.get('name')?.dirty || roleForm.get('name')?.touched)" class="text-danger">
-        <div *ngIf="roleForm.get('name')?.errors?.['required']">
-          Le nom du rôle est obligatoire.
-        </div>
-      </div>
+    <div class="form-group">
+      <label for="name">Nom du rôle</label>
+      <input type="text" formControlName="name" id="name" class="form-control" placeholder="Nom du rôle" />
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Permissions:</label>
-      <div class="list-group">
-        <button
-          type="button"
-          class="list-group-item list-group-item-action"
-          *ngFor="let permission of allPermissions"
-          (click)="togglePermission(permission)"
-          [class.active]="isSelected(permission)"
-        >
-          {{ permission.name }}
-        </button>
-      </div>
+    <div class="form-group">
+      <label for="permissions">Permissions</label>
+      <br><br>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Sélectionner des permissions</mat-label>
+        <mat-select (selectionChange)="addFromSelect($event)" multiple [value]="selectedPermissions" panelClass="custom-panel" id="permissions">
+          <mat-option *ngFor="let permission of allPermissions$ | async" [value]="permission">
+            {{ permission }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
-    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-    <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+    <div class="form-group">
+      <label class="form-label">Permissions sélectionnées</label>
+      <mat-chip-grid #chipGrid aria-label="Liste des permissions sélectionnées">
+        <mat-chip-row *ngFor="let p of selectedPermissions" (removed)="removePermission(p)">
+          {{ p }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-row>
+        <input
+          [matChipInputFor]="chipGrid"
+          [matChipInputAddOnBlur]="false"
+          [matChipInputSeparatorKeyCodes]="[]"
+          style="display: none"
+        />
+      </mat-chip-grid>
+    </div>
 
-    <button type="submit" class="btn btn-primary" [disabled]="roleForm.invalid || allPermissions.length === 0">
-      Ajouter Rôle
-    </button>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="roleForm.invalid || loading">
+        Enregistrer le rôle
+      </button>
+      <button type="button" class="btn btn-secondary ms-2" (click)="onCancel()" [disabled]="loading">
+        Annuler
+      </button>
+    </div>
   </form>
 </div>

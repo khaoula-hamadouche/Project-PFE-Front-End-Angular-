@@ -1,63 +1,42 @@
 import { Component, OnInit } from '@angular/core';
 import { DossierService } from '../../../service/dossier.service';
 import { CommonModule } from '@angular/common';
+import { IconDirective } from "@coreui/icons-angular";
+import {RouterLink} from "@angular/router";
+import { HttpClient } from '@angular/common/http';
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-file-link-renderer',
-  imports: [CommonModule],
+  imports: [CommonModule, IconDirective, FormsModule],
   templateUrl: "./file-link-renderer.component.html",
   styleUrls: ["./file-link-renderer.component.scss"],
+  standalone: true
 })
-export class FileLinkRendererComponent implements OnInit {
-  dossiers: any[] = [];
+export class FileLinkRendererComponent  {
+  country: string = '';
+  city: string = '';
+  apiResponse: any;
+  errorMessage: string = '';
 
-  constructor(private dossierService: DossierService) {}
+  constructor(private http: HttpClient) { }
 
-  ngOnInit(): void {
-    this.fetchDossiers();
-  }
+  callApiWithLocation() {
+    this.apiResponse = null;
+    this.errorMessage = '';
 
-  fetchDossiers() {
-    this.dossierService.getAllDossiers().subscribe({
-      next: (data) => {
-        console.log("✅ Données reçues :", data);
-        this.dossiers = data;
-      },
-      error: (err) => {
-        console.error("❌ Erreur lors de la récupération des dossiers", err);
-      }
-    });
-  }
+    const apiUrl = 'http://localhost:8085/weather'; // Remplacez par l'URL de votre API
+    const locationData = { country: this.country, city: this.city };
 
-  getFilesNames(fileDetails: any): string[] {
-    return fileDetails ? Object.keys(fileDetails) : [];
-  }
-
-  formatDate(dateString: string): string {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
-  getEtatClass(etat: string): string {
-    switch (etat) {
-      case 'EN_ATTENTE': return 'badge EN_ATTENTE';
-      case 'VALIDÉ': return 'badge VALIDÉ';
-      case 'REJETÉ': return 'badge REJETÉ';
-      default: return 'badge';
-    }
-  }
-
-  openFile(url: string) {
-    window.open(url, '_blank');
-  }
-
-  // Function to get the name of the user who added the dossier
-  getAddedByUserName(item: any): string {
-    return item?.chargeDossier?.name || 'N/A';
+    this.http.post(apiUrl, locationData) // Adaptez la méthode HTTP selon votre API
+      .subscribe(
+        (response) => {
+          this.apiResponse = response;
+        },
+        (error) => {
+          this.errorMessage = 'Une erreur s\'est produite lors de l\'appel à l\'API.';
+          console.error('Erreur API:', error);
+        }
+      );
   }
 }

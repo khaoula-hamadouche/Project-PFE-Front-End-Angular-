@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, Renderer2 } from "@angular/core";
+// list.component.ts
+import { AfterViewInit, Component, Renderer2, OnInit, OnDestroy } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { AgGridAngular } from "ag-grid-angular";
 import { RoleService } from "../../../service/role.service";
@@ -39,15 +40,18 @@ import { IconDirective } from '@coreui/icons-angular';
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
+import { MessageService } from '../../../service/message.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
   standalone: true,
-  imports: [AgGridAngular, CommonModule, TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule],
-})
-export class ListComponent implements AfterViewInit {
+  imports: [
+    AgGridAngular, CommonModule, TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, IconDirective ],
+      })
+export class ListComponent implements AfterViewInit, OnInit, OnDestroy {
   columnDefs: ColDef[] = [
     { headerName: 'ID', field: 'id', sortable: true, filter: true, lockPosition: "left", cellClass: "locked-col" },
     { headerName: 'Nom du rôle', field: 'name', sortable: true, filter: true },
@@ -81,13 +85,33 @@ export class ListComponent implements AfterViewInit {
   rowData: any[] = [];
   errorMessage: string = '';
   successMessage: string = '';
-  roleToDelete: number | null = null;
+  roleToDeleteId: number | null = null;
+  roleToDeleteName: string = '';
   deleteConfirmationVisible: boolean = false;
+  private successMessageSubscription: Subscription | undefined;
 
-  constructor(private roleService: RoleService, private renderer: Renderer2, private router: Router) {}
+  constructor(private roleService: RoleService, private renderer: Renderer2, private router: Router, private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.loadRoles();
+    this.successMessageSubscription = this.messageService.successMessage$.subscribe(
+      message => {
+        this.successMessage = message || '';
+        if (this.successMessage) {
+          setTimeout(() => this.messageService.clearSuccessMessage(), 5000);
+        }
+      }
+    );
+  }
+
+  ngAfterViewInit(): void {
+    this.addActionListeners();
+  }
+
+  ngOnDestroy(): void {
+    if (this.successMessageSubscription) {
+      this.successMessageSubscription.unsubscribe();
+    }
   }
 
   loadRoles() {
@@ -98,10 +122,6 @@ export class ListComponent implements AfterViewInit {
       },
       (error) => console.error('Erreur lors du chargement des rôles', error)
     );
-  }
-
-  ngAfterViewInit(): void {
-    this.addActionListeners();
   }
 
   addActionListeners() {
@@ -133,31 +153,38 @@ export class ListComponent implements AfterViewInit {
   }
 
   confirmDelete(roleId: number): void {
-    this.roleToDelete = roleId;
-    this.deleteConfirmationVisible = true;
+    const role = this.roles.find(role => role.id === roleId);
+    if (role) {
+      this.roleToDeleteId = roleId;
+      this.roleToDeleteName = role.name;
+      this.deleteConfirmationVisible = true;
+    }
   }
 
   cancelDelete(): void {
-    this.roleToDelete = null;
+    this.roleToDeleteId = null;
+    this.roleToDeleteName = '';
     this.deleteConfirmationVisible = false;
   }
 
   deleteConfirmed(): void {
-    if (this.roleToDelete !== null) {
-      this.roleService.deleteRole(this.roleToDelete).subscribe(
+    if (this.roleToDeleteId !== null) {
+      this.roleService.deleteRole(this.roleToDeleteId).subscribe(
         (message: string) => {
           console.log('Role deleted:', message);
-          this.successMessage = message;
+          this.successMessage = `Le rôle "${this.roleToDeleteName}" a été supprimé avec succès.`;
           this.errorMessage = '';
           this.loadRoles();
-          this.roleToDelete = null;
+          this.roleToDeleteId = null;
+          this.roleToDeleteName = '';
           this.deleteConfirmationVisible = false;
         },
         (error) => {
           console.error('Error deleting role:', error);
-          this.errorMessage = error.message || 'Erreur lors de la suppression du rôle.';
+          this.errorMessage = error.message || `Erreur lors de la suppression du rôle "${this.roleToDeleteName}".`;
           this.successMessage = '';
-          this.roleToDelete = null;
+          this.roleToDeleteId = null;
+          this.roleToDeleteName = '';
           this.deleteConfirmationVisible = false;
         }
       );
@@ -174,5 +201,14 @@ export class ListComponent implements AfterViewInit {
 
   trackById(index: number, user: any): number {
     return user.id;
+  }
+  add(): void {
+    this.router.navigate(['/roles/ajout']);
+  }
+
+  clearMessages(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.messageService.clearSuccessMessage();
   }
 }

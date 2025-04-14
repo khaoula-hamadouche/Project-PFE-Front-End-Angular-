@@ -1,33 +1,23 @@
+<h2>Analyse de contrat PDF</h2>
 
-<c-row>
-  <c-col xs>
-    <c-card class="mb-4 shadow-sm">
-      <c-card-body>
+<!-- Sélectionner un fichier PDF -->
+<input type="file" (change)="onFileSelected($event)" />
 
-        <!-- Barre de recherche -->
-        <div class="d-flex justify-content-between mb-3">
-          <h5 class="mb-0">Gestion des Utilisateurs</h5>
-          <input type="text" class="form-control w-25" placeholder="Rechercher..." >
-        </div>
+<!-- Afficher un spinner lorsque la requête est en cours -->
+<div *ngIf="isLoading" class="spinner-container">
+  <div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Chargement...</span>
+  </div>
+  <p>Chargement...</p>
+</div>
 
-        
-           
- 
-              
-        <ag-grid-angular
-        style="width: 100%; height:500px;"
-        class="ag-theme-alpine"
-        [columnDefs]="columnDefs"
-        [defaultColDef]="defaultColDef"
-        [rowData]="rowData"
-        [pagination]="true"
-        [paginationPageSize]="paginationPageSize"
-        [paginationPageSizeSelector]="paginationPageSizeSelector"
-        (gridReady)="onGridReady($event)"
-      ></ag-grid-angular>
+<!-- Afficher les informations si disponibles -->
+<div *ngIf="fournisseur || montant" class="mt-4">
+  <label>Fournisseur :</label>
+  <input type="text" [value]="fournisseur" class="form-control" readonly />
 
-     
-      </c-card-body>
-    </c-card>
-  </c-col>
-</c-row>
+  <label class="mt-2">Montant du contrat :</label>
+  <input type="text" [value]="montant" class="form-control" readonly />
+</div>
+
+

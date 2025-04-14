@@ -5,7 +5,18 @@
 
         <div class="d-flex justify-content-between mb-3">
           <h5 class="mb-0">Gestion des roles</h5>
-          <input type="text" class="form-control w-25" placeholder="Rechercher...">
+
+          <div class="d-flex gap-2">
+
+            <button type="button" class="btn btn-secondary ms-2" (click)="add()"><svg cIcon name="cilUserFollow"></svg>
+              Ajouter </button>
+
+          </div>
+        </div>
+
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+          {{ successMessage }}
+          <button type="button" class="btn-close" (click)="clearMessages()" aria-label="Close"></button>
         </div>
 
         <ag-grid-angular
@@ -28,7 +39,7 @@
                 <button type="button" class="btn-close" (click)="cancelDelete()" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                Êtes-vous sûr de vouloir supprimer le rôle avec l'ID {{ roleToDelete }} ?
+                <p>Êtes-vous sûr de vouloir supprimer le rôle "{{ roleToDeleteName }}" ?</p>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Annuler</button>
@@ -39,8 +50,10 @@
         </div>
         <div *ngIf="deleteConfirmationVisible" class="modal-backdrop fade show"></div>
 
-        <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
-        <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+          {{ errorMessage }}
+          <button type="button" class="btn-close" (click)="clearMessages()" aria-label="Close"></button>
+        </div>
 
       </c-card-body>
     </c-card>

@@ -72,3 +72,21 @@
   color: #999;
   font-style: italic;
 }
+
+/* Applique une couleur jaune au texte si l'état est "EN_ATTENTE" */
+.etat-attente .ag-cell-value {
+  background-color: #ffc107;
+  color: black;
+}
+
+/* Applique une couleur verte au texte si l'état est "VALIDÉ" */
+.etat-valide .ag-cell-value {
+  background-color: #28a745;
+  color: #1c1f2c;
+}
+
+/* Applique une couleur rouge au texte si l'état est "REJETÉ" */
+.etat-rejete .ag-cell-value {
+  background-color: #dc3545;
+  color: white;
+}

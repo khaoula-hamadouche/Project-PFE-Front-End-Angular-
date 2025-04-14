@@ -34,14 +34,6 @@ export function getNavItems(storageService: StorageService): INavData[] {
       });
     }
 
-    if (permissions.includes('AJOUTERUSER')) {
-      userMenu.children!.push({
-        name: 'Ajouter un utilisateur',
-        url: '/base/ajouteuser',
-        icon: 'nav-icon-bullet'
-      });
-    }
-
 
     if (userMenu.children!.length > 0) {
       navItems.push(userMenu);
@@ -59,48 +51,18 @@ export function getNavItems(storageService: StorageService): INavData[] {
 
     if (permissions.includes('GETALLROLE')) {
       roleMenu.children!.push({
-        name: 'Voir les rôles',
+        name: 'Gestion des rôles',
         url: '/roles/list',
         icon: 'nav-icon-bullet'
       });
     }
 
-    if (permissions.includes('AJOUTERROLE')) {
-      roleMenu.children!.push({
-        name: 'Ajouter un rôle',
-        url: '/roles/ajout',
-        icon: 'nav-icon-bullet'
-      });
-    }
-
-    if (permissions.includes('MODIFERROLE')) {
-      roleMenu.children!.push({
-        name: 'Modifier un rôle',
-        url: '/roles/edit',
-        icon: 'nav-icon-bullet'
-      });
-    }
-
-    if (permissions.includes('SUPPRIMERROLE')) {
-      roleMenu.children!.push({
-        name: 'Supprimer un rôle',
-        url: '/roles/delete',
-        icon: 'nav-icon-bullet'
-      });
-    }
 
     if (roleMenu.children!.length > 0) {
       navItems.push(roleMenu);
     }
   }
 
-  // Profil utilisateur
-
-  navItems.push({
-    name: 'Mon Profil',
-    url: '/profile',
-    iconComponent: { name: 'cil-user' },
-  });
 
 
 
@@ -159,15 +121,6 @@ export function getNavItems(storageService: StorageService): INavData[] {
       iconComponent: { name: 'cil-description' },
       children: [],
     };
-
-    if (permissions.includes('GETALLDOSSIER')) {
-      dossierMenu.children!.push({
-        name: 'Gestion des dossiers',
-        url: '/dossier/file',
-        icon: 'nav-icon-bullet'
-      });
-    }
-
     if (permissions.includes('AJOUTERDOSSIER')) {
       dossierMenu.children!.push({
         name: 'Ajouter un dossier',
@@ -175,6 +128,78 @@ export function getNavItems(storageService: StorageService): INavData[] {
         icon: 'nav-icon-bullet'
       });
     }
+    if (permissions.includes('GETDOSSIERBYUSER')) {
+      dossierMenu.children!.push({
+        name: 'Attribution',
+        url: '/dossier/dossier Attribution',
+        icon: 'nav-icon-bullet'
+      });}
+      if (permissions.includes('GETDOSSIERBYUSER')) {
+        dossierMenu.children!.push({
+          name: 'LANCEMENT',
+          url: '/dossier/dossier Lancement',
+          icon: 'nav-icon-bullet'
+        });
+    }
+    if (permissions.includes('GETDOSSIERBYUSER')) {
+      dossierMenu.children!.push({
+        name: 'AVENANT',
+        url: '/dossier/dossier Avenant',
+        icon: 'nav-icon-bullet'
+      });
+    }
+    if (permissions.includes('GETDOSSIERBYUSER')) {
+      dossierMenu.children!.push({
+        name: 'Gre a Gre',
+        url: '/dossier/dossier Gre a Gre',
+        icon: 'nav-icon-bullet'
+      });
+    }
+    if (permissions.includes('GETDOSSIERBYUSER')) {
+      dossierMenu.children!.push({
+        name: 'RECOURS',
+        url: '/dossier/dossier Recours',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (permissions.includes('GETALLDOSSIER')) {
+      const gestionDossiers: INavData = {
+        name: 'Gestion des Dossiers',
+        url: '/dossier', // Peut être vide ou générique
+        icon: 'nav-icon-folder',
+        children: [
+          {
+            name: 'Dossier Avenant',
+            url: '/dossier/Avenant',
+            icon: 'nav-icon-bullet'
+          },
+          {
+            name: 'Dossier Attribution',
+            url: '/dossier/Attribution',
+            icon: 'nav-icon-bullet'
+          },
+          {
+            name: 'Dossier Recours',
+            url: '/dossier/Recours',
+            icon: 'nav-icon-bullet'
+          },
+          {
+            name: 'Dossier Gre à Gre',
+            url: '/dossier/Gre a Gre',
+            icon: 'nav-icon-bullet'
+          },
+          {
+            name: 'Dossier Lancement',
+            url: '/dossier/Lancement',
+            icon: 'nav-icon-bullet'
+          }
+        ]
+      };
+
+      dossierMenu.children!.push(gestionDossiers);
+    }
+
 
 
     if (dossierMenu.children!.length > 0) {
@@ -183,7 +208,12 @@ export function getNavItems(storageService: StorageService): INavData[] {
   }
 
 
-
+  const roleMenu: INavData = {
+    name: 'Dossier',
+    url: '/dossiers/create',
+    iconComponent: { name: 'cil-people' },
+    children: [],
+  };
 
   return navItems;
 }

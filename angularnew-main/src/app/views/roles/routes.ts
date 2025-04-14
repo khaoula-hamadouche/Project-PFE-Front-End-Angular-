@@ -17,7 +17,7 @@ export const routes: Routes = [
         data: { title: 'Ajouter rôle', permissions: ['AJOUTERROLE'] } // 🔒 Vérifie si les permissions sont bien gérées
       },
       {
-        path: 'edit',
+        path: 'edit/:id',
         loadComponent: () => import('./edit-role/edit-role.component').then(m => m.EditRoleComponent),
         data: { title: 'Modifier rôle', permissions: ['MODIFIERROLE'] } // 🔒 Vérifie si les permissions sont bien gérées
       }

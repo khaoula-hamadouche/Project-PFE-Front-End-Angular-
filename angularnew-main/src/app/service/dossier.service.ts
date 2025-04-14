@@ -1,6 +1,31 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
+interface Dossier {
+  numeroDossier: string;
+  intitule: string;
+  typePassation: 'APPEL_OFFRE_LANCEMENT' | 'Consultation_Prestataire_de_Lancement' | 'Consultation_Procurement_de_Lancement' |
+    'APPEL_OFFRE_ATTRIBUTION' | 'Consultation_Prestataire_dAttribution' | 'Consultation_Procurement_dAttribution' |
+    'GRE_A_GRE' | 'AVENANT';
+  montantEstime?: number;
+  budgetEstime?: number;
+  dureeContrat?: number;
+  dureeRealisation?: number;
+  nomFournisseur?: string;
+  montantContrat?: number;
+  fournisseurEtranger?: boolean;
+  fournisseurEtrangerInstallationPermanente?: boolean;
+  originePaysNonDoubleImposition?: boolean;
+  numeroContrat?: string;
+  dateExpirationContrat?: string;
+  dateSignatureContrat?: string;
+  objetAvenant?: string;
+  montantAvenant?: number;
+  dureeAvenant?: number;
+  nouveauMontantContrat?: number;
+  nouvelleDureeContrat?: number;
+  // Si tu as d'autres champs spécifiques pour chaque type de dossier, ajoute-les ici
+}
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +33,7 @@ import { Observable } from 'rxjs';
 export class DossierService {
   private apiUrl = 'http://localhost:8085/api/dossiers';
   private passationUrl = 'http://localhost:8085/api/passations'; // API pour Enum
-
+  private  pdfUrl = 'http://localhost:9091/generate-merged-files-pdf';
   constructor(private http: HttpClient) {}
 
   ajouterDossier(formData: FormData): Observable<any> {
@@ -21,6 +46,24 @@ export class DossierService {
 
   }
 
+  deleteDossier(id: number) {
+    return this.http.delete(`${this.apiUrl}/${id}`,{withCredentials: true});
+  }
+  getDossiersByTypeOnly(typePassation: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/by-type-only/${typePassation}`,{withCredentials: true});
+  }
+  getDossiersByType(typePassation: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/by-type/${typePassation}`,{withCredentials: true});
+  }
+  updateDossier(dossierId: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${dossierId}`, formData, { withCredentials: true });
+  }
+  getDossierById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`,{withCredentials: true});
+  }
+  mergePdfFiles(files: string[],id: number): Observable<any> {
+    return this.http.post<any>(`${this.pdfUrl}/${id}`, {withCredentials: true});
+  }
   getAllDossiers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/`,{withCredentials: true});
   }}

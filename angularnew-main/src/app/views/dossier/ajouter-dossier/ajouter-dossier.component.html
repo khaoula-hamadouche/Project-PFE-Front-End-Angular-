@@ -1,35 +1,13 @@
-<mat-card class="p-4">
-  <mat-horizontal-stepper linear>
-    <!-- Étape 1: Numéro Dossier et Intitulé -->
-    <mat-step [stepControl]="dossierForm.get('numeroDossier')! && dossierForm.get('intitule')!" label="Informations du Dossier">
-      <form [formGroup]="dossierForm">
-        <h4>Informations du Dossier</h4>
-        <mat-form-field appearance="outline" class="w-full mb-4">
-          <mat-label>Numéro de Dossier</mat-label>
-          <input matInput formControlName="numeroDossier" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-full mb-4">
-          <mat-label>Intitulé</mat-label>
-          <input matInput formControlName="intitule" required>
-        </mat-form-field>
-
-        <div>
-          <button mat-button matStepperNext>Suivant</button>
-        </div>
-      </form>
-    </mat-step>
-
-    <!-- Étape 2: Mode de Passation -->
-    <mat-step [stepControl]="dossierForm.get('typePassation')!" label="Fichiers Requis">
-      <form [formGroup]="dossierForm" class="space-y-6">
-        <!-- Titre -->
-        <div class="text-center mb-6">
-          <h4 class="text-2xl font-bold">Sélection du Mode de Passation</h4>
+<mat-card class="form-card p-6">
+  <mat-horizontal-stepper linear class="stepper">
+    <!-- Étape 1 : Fichiers Requis -->
+    <mat-step [stepControl]="dossierForm.get('typePassation')!" label="Fichiers Requis" class="step">
+      <form [formGroup]="dossierForm" class="form">
+        <div class="form-header text-center mb-6">
+          <h4 class="form-title">Sélection du Mode de Passation</h4>
         </div>
 
-        <!-- Sélection du Type de Passation -->
-        <mat-form-field appearance="outline" class="w-full mb-4">
+        <mat-form-field appearance="outline" class="form-field w-full mb-4" style="width: 100%;">
           <mat-label>Type de Passation</mat-label>
           <mat-select formControlName="typePassation" (selectionChange)="onTypePassationChange($event.value)" required>
             <mat-option *ngFor="let passation of passations" [value]="passation">
@@ -38,47 +16,164 @@
           </mat-select>
         </mat-form-field>
 
-        <!-- Affichage des Fichiers Requis -->
-        <div *ngIf="selectedFichiers.length > 0" class="mb-4">
-          <h3 class="text-lg font-semibold mb-2">Fichiers Requis</h3>
-          <div *ngFor="let fichier of selectedFichiers; let i = index" class="mb-2">
-            <label class="block mb-1 font-medium">{{ fichier }} :</label>
-            <br>
-            <input type="file" (change)="onFileSelect($event, i)" class="border p-2 rounded w-full">
+        <div *ngIf="selectedFichiers.length > 0" class="files-section mb-4">
+          <h3 class="section-title">Fichiers Requis</h3>
+          <div *ngFor="let fichier of selectedFichiers; let i = index" class="file-upload mb-2">
+            <label class="file-label">{{ fichier }} :</label>
+            <input type="file" (change)="onFileSelect($event, i)" class="file-input">
           </div>
         </div>
 
-        <!-- Bouton Ajouter un Fichier Supplémentaire -->
-        <button mat-raised-button color="primary" (click)="ajouterFichierSupplementaire()" class="mb-4">
-          Ajouter un autre fichier
-        </button>
-<br> <br>
-        <!-- Boutons de Navigation -->
-        <div class="flex justify-between">
-          <button mat-stroked-button matStepperPrevious>Précédent</button>
-          <button mat-raised-button color="primary" matStepperNext>Suivant</button>
+        <!-- Afficher la section des fichiers supplémentaires uniquement après la sélection d'un type de passation -->
+        <h4>Ajouter autre fichier</h4>
+        <div *ngIf="dossierForm.get('typePassation')?.value" class="additional-file mb-4">
+          <div class="input-wrapper">
+            <input matInput formControlName="nomFichierSuppl" class="file-input" placeholder="Nom du fichier">
+            <mat-error *ngIf="dossierForm.get('nomFichierSuppl')?.invalid && dossierForm.get('nomFichierSuppl')?.touched">
+              Le nom du fichier est requis.
+            </mat-error>
+          </div>
+          <button mat-raised-button color="primary" (click)="ajouterFichierSupplementaire()" class="add-file-btn">
+            Ajouter un fichier
+          </button>
         </div>
+
+
+        <div *ngIf="fichiersSupplementaires.length > 0" class="additional-files mb-4">
+          <h3 class="section-title">Fichiers Supplémentaires</h3>
+          <div *ngFor="let fichierSuppl of fichiersSupplementaires; let i = index" class="file-upload mb-2">
+            <label class="file-label">{{ fichierSuppl.nom }} :</label>
+            <input type="file" (change)="onFileSelect($event, selectedFichiers.length + i)" class="file-input">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button matStepperNext class="btn-next">Suivant</button>
+        </div>
+
       </form>
+
+
+
     </mat-step>
+    <mat-step [stepControl]="dossierForm.get('numeroDossier')! && dossierForm.get('intitule')!" label="Informations du Dossier" class="step">
+      <form [formGroup]="dossierForm" class="grid grid-cols-1 gap-6">
+        <h4 class="col-span-full text-2xl font-semibold mb-2">Informations du Dossier</h4>
 
-    <!-- Étape 3: Confirmation -->
-    <mat-step label="Confirmation">
-      <h4>Confirmation</h4>
-      <p>Vérifiez les informations avant de soumettre le dossier.</p>
+        <!-- Numéro de Dossier avec codification -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Numéro de Dossier</mat-label>
+          <input matInput formControlName="numeroDossier" required placeholder="Ex : 2025/DOS/001" [value]="formatNumeroDossier(dossierForm.get('numeroDossier')?.value)">
+          <mat-error *ngIf="dossierForm.get('numeroDossier')?.hasError('required')">
+            Le numéro de dossier est requis.
+          </mat-error>
+        </mat-form-field>
 
-      <div>
-        <strong>Numéro de Dossier :</strong> {{ dossierForm.get('numeroDossier')?.value }}<br>
-        <strong>Intitulé :</strong> {{ dossierForm.get('intitule')?.value }}<br>
-        <strong>Type de Passation :</strong> {{ dossierForm.get('typePassation')?.value }}<br>
-        <strong>Fichiers :</strong>
-        <ul>
-          <li *ngFor="let fichier of selectedFichiers">{{ fichier }}</li>
-        </ul>
+        <!-- Intitulé -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Intitulé</mat-label>
+          <textarea matInput formControlName="intitule" required placeholder="Ex : Fourniture de matériel informatique"> </textarea>
+          <mat-error *ngIf="dossierForm.get('intitule')?.hasError('required')">
+            L’intitulé est requis.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Champs dynamiques -->
+        <ng-container *ngFor="let champ of DonneeRequis[dossierForm.value.typePassation]">
+          <mat-form-field *ngIf="!isCheckbox(champ)" appearance="outline" class="w-full">
+            <mat-label>{{ champLabels[champ] || champ }}</mat-label>
+            <input matInput [formControlName]="champ" [placeholder]="champLabels[champ] || champ">
+            <mat-error *ngIf="dossierForm.get(champ)?.invalid && dossierForm.get(champ)?.touched">
+              Ce champ est requis ou invalide.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-checkbox *ngIf="isCheckbox(champ)" [formControlName]="champ" class="col-span-full">
+            {{ champLabels[champ] || champ }}
+          </mat-checkbox>
+        </ng-container>
+
+    <!-- Boutons navigation -->
+      <div class="navigation-buttons">
+        <button mat-stroked-button matStepperPrevious class="btn-previous">
+          Précédent
+        </button>
+
+        <button mat-raised-button matStepperNext [disabled]="dossierForm.invalid" class="btn-next">
+          Suivant
+        </button>
       </div>
 
-      <div>
-        <button mat-button matStepperPrevious>Précédent</button>
-        <button mat-raised-button color="primary" (click)="onSubmit()">Ajouter</button>
+
+    </form>
+    </mat-step>
+
+    <!-- Étape 3 : Confirmation -->
+    <mat-step label="Confirmation" class="step">
+      <h2 class="confirmation-title">📝 Confirmation du Dossier</h2>
+      <p>Veuillez vérifier les informations avant la soumission.</p>
+
+      <mat-card class="confirmation-card">
+        <mat-card-content>
+
+          <section class="info-block">
+            <h3>📁 Informations de dossier {{ dossierForm.get('numeroDossier')?.value }}</h3>
+
+            <!-- Ligne plus proche du titre -->
+            <mat-divider class="custom-divider"></mat-divider>
+
+            <div class="info-line">
+              <label>Intitulé :</label>
+              <span>{{ dossierForm.get('intitule')?.value }}</span>
+            </div>
+            <div class="info-line">
+              <label>Type de Passation :</label>
+              <span>{{ dossierForm.get('typePassation')?.value }}</span>
+            </div>
+
+            <!-- Données dynamiques spécifiques au type -->
+            <div *ngIf="DonneeRequis[dossierForm.value.typePassation]?.length" class="info-supp">
+              <div *ngFor="let champ of DonneeRequis[dossierForm.value.typePassation]" class="info-line">
+                <label>{{ champLabels[champ] || champ }} :</label>
+                <span>{{ dossierForm.get(champ)?.value }}</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="info-block">
+            <h3>📎 Fichiers Requis</h3>
+            <mat-divider></mat-divider>
+            <mat-list>
+              <mat-list-item *ngFor="let fichier of selectedFichiers; let i = index">
+                <span matLine><strong>{{ fichier }}</strong> : {{ dossierForm.get('fichiers')?.value[i]?.name || 'Non sélectionné' }}</span>
+              </mat-list-item>
+            </mat-list>
+          </section>
+
+          <section *ngIf="fichiersSupplementaires.length" class="info-block">
+            <h3>📌 Fichiers Supplémentaires</h3>
+            <mat-divider></mat-divider>
+            <mat-list>
+              <mat-list-item *ngFor="let fichierSuppl of fichiersSupplementaires">
+                <span matLine><strong>{{ fichierSuppl.nom }}</strong> : {{ fichierSuppl.file?.name || 'Non sélectionné' }}</span>
+              </mat-list-item>
+            </mat-list>
+          </section>
+
+        </mat-card-content>
+      </mat-card>
+
+
+      <div class="form-actions">
+      <button mat-stroked-button matStepperPrevious class="btn-previous">
+        Précédent
+      </button>
+        <button mat-raised-button [disabled]="isSubmitting" (click)="onSubmit()" class="btn-next">
+          <mat-progress-spinner *ngIf="isSubmitting" mode="indeterminate" diameter="20"></mat-progress-spinner>
+          Ajouter un dossier
+        </button>
+
+
       </div>
     </mat-step>
   </mat-horizontal-stepper>

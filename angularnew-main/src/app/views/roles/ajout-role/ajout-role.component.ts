@@ -1,103 +1,103 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RoleService } from '../../../service/role.service';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; // Import the Router
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { RoleService } from '../../../service/role.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-interface Permission {
-  id: number;
-  name: string;
-}
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatSelectChange, MatSelectModule } from "@angular/material/select";
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MessageService } from '../../../service/message.service'; // Import the MessageService
 
 @Component({
   selector: 'app-ajout-role',
   templateUrl: './ajout-role.component.html',
-  styleUrls: ['./ajout-role.component.css'],
+  styleUrls: ['./ajout-role.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
-    CommonModule
+    MatFormFieldModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatIconModule,
+    MatButtonModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AjoutRoleComponent implements OnInit {
-
   roleForm: FormGroup;
-  allPermissions: Permission[] = [];
-  selectedPermissions: Permission[] = [];
-  errorMessage: string = '';
-  successMessage: string = '';
+  allPermissions$: Observable<string[]> | undefined;
+  selectedPermissions: string[] = [];
+  loading = false;
 
   constructor(
-    private roleService: RoleService,
     private fb: FormBuilder,
-    private router: Router // Inject the Router service
+    private roleService: RoleService,
+    private router: Router,
+    private messageService: MessageService // Inject the MessageService
   ) {
     this.roleForm = this.fb.group({
       name: ['', Validators.required],
+      permissions: [[]]
     });
   }
 
   ngOnInit(): void {
-    this.loadPermissions();
-  }
-
-  loadPermissions(): void {
-    this.roleService.getAllPermissions().subscribe(
-      (permissions: Permission[]) => {
-        this.allPermissions = permissions;
-      },
-      (error) => {
-        console.error('Error loading permissions:', error);
-        this.errorMessage = 'Erreur lors du chargement des permissions.';
-      }
+    this.allPermissions$ = this.roleService.getAllPermissions().pipe(
+      map((permissions: { id: number; name: string }[]) => {
+        return permissions.map(p => p.name);
+      })
     );
   }
 
-  togglePermission(permission: Permission): void {
-    const index = this.selectedPermissions.findIndex((p) => p.id === permission.id);
-    if (index > -1) {
-      this.selectedPermissions.splice(index, 1);
+  addFromSelect(event: MatSelectChange): void {
+    const selected = event.value;
+
+    if (Array.isArray(selected)) {
+      this.selectedPermissions = [...new Set([...this.selectedPermissions, ...selected])];
     } else {
-      this.selectedPermissions.push(permission);
+      if (!this.selectedPermissions.includes(selected)) {
+        this.selectedPermissions.push(selected);
+      }
     }
+
+    this.roleForm.get('permissions')?.setValue(this.selectedPermissions);
   }
 
-  isSelected(permission: Permission): boolean {
-    return this.selectedPermissions.some((p) => p.id === permission.id);
+  removePermission(permission: string): void {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    this.roleForm.get('permissions')?.setValue(this.selectedPermissions);
+    this.roleForm.get('permissions')?.updateValueAndValidity();
   }
 
-  onSubmit(): void {
+  submitRole(): void {
     if (this.roleForm.valid) {
-      const newRole = {
+      const roleData = {
         name: this.roleForm.get('name')?.value,
-        permissions: this.selectedPermissions.map(p => ({ id: p.id, name: p.name })),
+        permissions: this.selectedPermissions.map(p => ({ name: p }))
       };
 
-      this.roleService.createRole(newRole).subscribe(
-        (response) => {
-          console.log('Role created successfully:', response);
-          this.successMessage = 'Rôle créé avec succès!';
-          this.errorMessage = '';
-          this.roleForm.reset();
-          this.selectedPermissions = [];
-          this.router.navigate(['/roles/list']); // Navigate to the specified path
+      this.loading = true;
+      this.roleService.createRole(roleData).subscribe(
+        (res: any) => {
+          console.log("Rôle créé avec succès", res);
+          this.messageService.setSuccessMessage(`Le rôle "${res.name}" a été ajouté avec succès.`); // Set the success message
+          this.router.navigate(['/roles/list']);
         },
         (error) => {
-          console.error('Error creating role:', error);
-          this.successMessage = '';
-          if (error.error && typeof error.error === 'string') {
-            this.errorMessage = error.error;
-          } else if (error.error && error.error.message) {
-            this.errorMessage = error.error.message;
-          }
-          else {
-            this.errorMessage = 'Erreur lors de la création du rôle.';
-          }
+          console.error("Erreur lors de la création du rôle :", error);
+          // Optionally set an error message using messageService.setErrorMessage()
         }
-      );
-    } else {
-      this.errorMessage = 'Veuillez remplir le nom du rôle.';
-      this.successMessage = '';
+      ).add(() => this.loading = false);
     }
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/roles/list']);
   }
 }
