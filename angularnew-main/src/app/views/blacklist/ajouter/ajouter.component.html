@@ -1,0 +1,46 @@
+<div class="container user-form-container">
+             <form [formGroup]="blacklistForm" (ngSubmit)="ajouterFournisseur()" class="user-form">
+               <h3 class="user-form-title">Ajouter un Fournisseur Blacklisté</h3>
+           
+               <div class="form-group">
+                 <label for="denomination">Dénomination</label>
+                 <input type="text" formControlName="denomination" id="denomination" class="form-control" placeholder="Nom du fournisseur" />
+               </div>
+           
+               
+           
+               <div class="form-group">
+                 <label for="activite">Activité</label>
+                 <input type="text" formControlName="activite" id="activite" class="form-control" placeholder="Type d'activité" />
+               </div>
+           
+               <div class="form-group">
+                 <label for="structure">Structure Ayant Demandé l'Exclusion</label>
+                 <input type="text" formControlName="structureAyantDemandeExclusion" id="structure" class="form-control" placeholder="Ex : DIRECTION ACHATS" />
+               </div>
+           
+               <div class="form-group">
+                 <label for="dateExclusion">Date d'Exclusion</label>
+                 <input type="date" formControlName="dateExclusion" id="dateExclusion" class="form-control" />
+               </div>
+           
+               <div class="form-group">
+                 <label for="motifs">Motifs</label>
+                 <textarea formControlName="motifs" id="motifs" class="form-control" rows="3" placeholder="Motifs de l'exclusion"></textarea>
+               </div>
+           
+               <div class="form-group">
+                 <label for="duree">Durée (en mois)</label>
+                 <input type="number" formControlName="duree" id="duree" class="form-control" placeholder="Durée de l'exclusion" />
+               </div>
+           
+               <div class="form-actions">
+                 <button type="submit" class="btn btn-primary" [disabled]="blacklistForm.invalid || loading">
+                   <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                   Ajouter à la Blacklist
+                 </button>
+                 <button type="button" class="btn btn-secondary ms-2" (click)="onCancel()" [disabled]="loading">Annuler</button>
+               </div>
+             </form>
+           </div>
+           

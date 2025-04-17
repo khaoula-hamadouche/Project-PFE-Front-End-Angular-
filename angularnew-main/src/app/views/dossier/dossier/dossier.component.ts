@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit, Renderer2 } from "@angular/core";
 import { AgGridAngular } from "ag-grid-angular";
 import { DossierService } from "../../../service/dossier.service";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule } from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { Router } from '@angular/router'; // Importation du service Router
 import {
   CardBodyComponent, CardComponent, ColComponent, RowComponent, TextColorDirective
@@ -23,7 +23,7 @@ ModuleRegistry.registerModules([
 @Component({
   selector: "app-dossier",
   standalone: true,
-  imports: [AgGridAngular, CommonModule, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, IconDirective],
+  imports: [AgGridAngular, CommonModule, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, IconDirective, FormsModule],
   templateUrl: "./dossier.component.html",
   styleUrls: ["./dossier.component.scss"],
 })
@@ -70,47 +70,7 @@ export class DossierComponent implements OnInit, AfterViewInit {
       },
       width: 250,
     },
-    {
-      headerName: 'Actions',
-      cellRenderer: (params: ICellRendererParams) => {
-        const div = document.createElement('div');
 
-        // Bouton Modifier
-        const editButton = document.createElement('button');
-        editButton.className = 'btn btn-warning btn-sm me-2';
-        editButton.innerText = 'Modifier';
-        const dossierId = params.data?.id;
-        editButton.addEventListener('click', () => {
-          this.router.navigate([`/dossier/edit-dossier/${dossierId}`]);
-        });
-
-        // Bouton Supprimer
-        const deleteButton = document.createElement('button');
-        deleteButton.className = 'btn btn-danger btn-sm';
-        deleteButton.innerText = 'Supprimer';
-        deleteButton.addEventListener('click', () => {
-          if (confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')) {
-            this.dossierService.deleteDossier(dossierId).subscribe({
-              next: () => {
-                // Rafraîchir les données après suppression
-                this.getDossiers();
-              },
-              error: (error) => {
-                console.error('Erreur lors de la suppression du dossier :', error);
-                alert("Erreur lors de la suppression du dossier.");
-              }
-            });
-          }
-        });
-
-        div.appendChild(editButton);
-        div.appendChild(deleteButton);
-
-        return div;
-      },
-      width: 250,
-      suppressSizeToFit: true,
-    }
 
   ];
 
@@ -217,5 +177,12 @@ export class DossierComponent implements OnInit, AfterViewInit {
   }
   generatePdfReport() {
     window.open('http://localhost:9091/generate-dossier-pdf', '_blank'); // Changed to plural
+  }
+  selectedType: string = '';
+  onTypeChange(): void {
+    if (this.selectedType) {
+      const encodedType = encodeURIComponent(this.selectedType);
+      this.router.navigate([`/dossier/${encodedType}`]);
+    }
   }
 }

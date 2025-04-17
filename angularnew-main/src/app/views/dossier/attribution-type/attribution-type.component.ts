@@ -74,7 +74,7 @@ export class AttributionTypeComponent implements OnInit, AfterViewInit {
         const div = document.createElement('div');
 
         const editButton = document.createElement('button');
-        editButton.className = 'btn btn-warning btn-sm me-2';
+        editButton.className = 'btn btn-sm btn-primary edit-btn';
         editButton.innerText = 'Modifier';
         const dossierId = params.data?.id;
         editButton.addEventListener('click', () => {
@@ -158,11 +158,7 @@ export class AttributionTypeComponent implements OnInit, AfterViewInit {
       });
   }
   extractAttributionSpecificDetails(details: any, typePassation: string): any {
-    if (typePassation === 'APPEL_OFFRE_ATTRIBUTION') {
-      return {
-        // Propriétés spécifiques à APPEL_OFFRE_ATTRIBUTION
-      };
-    } else if (typePassation === 'Consultation_Prestataire_dAttribution' || typePassation === 'Consultation_Procurement_dAttribution') {
+  if (typePassation === 'Consultation_Prestataire_dAttribution' || typePassation === 'Consultation_Procurement_dAttribution' || typePassation ==='APPEL_OFFRE_ATTRIBUTION') {
       return {
         nomFournisseur: details?.nomFournisseur ?? 'N/A',
         montantContrat: details?.montantContrat ?? 'N/A',

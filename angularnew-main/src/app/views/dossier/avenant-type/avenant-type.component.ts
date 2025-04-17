@@ -39,7 +39,10 @@ export class AvenantTypeComponent implements OnInit, AfterViewInit {
   columnDefs: ColDef[] = [
     { headerName: 'Intitulé', field: 'intitule', sortable: true, filter: true, resizable: true },
     { headerName: 'Numéro Dossier', field: 'numeroDossier', sortable: true, filter: true, resizable: true },
+    { headerName: 'Etat', field: 'etat', sortable: true, filter: true, resizable: true }, // Ajout de la colonne Etat
+
     { headerName: 'Numero Contrat', field: 'numeroContrat', sortable: true, filter: true, resizable: true },
+
     { headerName: 'date Signature Contrat', field: 'dateSignatureContrat', sortable: true, filter: true, resizable: true },
     { headerName: 'Durée Contrat', field: 'dureeContrat', sortable: true, filter: true, resizable: true },
     { headerName: 'date Expiration Contrat', field: 'dateExpirationContrat', sortable: true, filter: true, resizable: true },
@@ -82,7 +85,7 @@ export class AvenantTypeComponent implements OnInit, AfterViewInit {
         const div = document.createElement('div');
 
         const editButton = document.createElement('button');
-        editButton.className = 'btn btn-warning btn-sm me-2';
+        editButton.className = 'btn btn-sm btn-primary edit-btn';
         editButton.innerText = 'Modifier';
         const dossierId = params.data?.id;
         editButton.addEventListener('click', () => {
@@ -161,8 +164,7 @@ export class AvenantTypeComponent implements OnInit, AfterViewInit {
           dateSoumission: dossier.dateSoumission,
           fileDetails: dossier.fileDetails,
           chargeDossier: dossier.chargeDossier?.name || 'N/A',
-
-          // Champs extraits depuis "details"
+          etat: dossier.etat,
           numeroContrat: dossier.details?.numeroContrat ?? 'N/A',
           dateSignatureContrat: dossier.details?.dateSignatureContrat ?? 'N/A',
           dureeContrat: dossier.details?.dureeContrat ?? 'N/A',

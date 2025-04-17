@@ -214,7 +214,9 @@ export class AjouterDossierComponent implements OnInit {
     this.dossierService.ajouterDossier(formData).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.router.navigate(['/dossiers']);
+        alert('Le dossier a été ajouté avec succès !');  // Affichage de l'alerte
+        this.router.navigate(['/dossiers']);  // Redirection vers la liste des dossiers
+        this.dossierForm.reset();  // Réinitialisation du formulaire
       },
       error: (err) => {
         this.isSubmitting = false;

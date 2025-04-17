@@ -51,7 +51,7 @@ export const routes: Routes = [
 
       },
       {
-        path: 'Gre a Gre',
+        path: 'Gre',
         loadComponent: () => import('./gre-a-gre/gre-a-gre.component').then(m => m.GreAGreComponent),
 
       },

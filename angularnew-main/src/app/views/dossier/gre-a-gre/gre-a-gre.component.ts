@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit, Renderer2 } from "@angular/core";
 import { AgGridAngular } from "ag-grid-angular";
 import { DossierService } from "../../../service/dossier.service";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule } from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {
   CardBodyComponent, CardComponent, ColComponent, RowComponent, TextColorDirective
 } from "@coreui/angular";
@@ -26,7 +26,7 @@ ModuleRegistry.registerModules([
   standalone: true,
   imports: [
     AgGridAngular, CommonModule, TextColorDirective, CardComponent,
-    CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule
+    CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, FormsModule
   ],
 })
 export class GreAGreComponent implements OnInit, AfterViewInit {
@@ -36,10 +36,12 @@ export class GreAGreComponent implements OnInit, AfterViewInit {
   errorMessage: string | null = null;
 
   columnDefs: ColDef[] = [
-    { headerName: 'Intitulé', field: 'intitule', sortable: true, filter: true, resizable: true },
     { headerName: 'Numéro Dossier', field: 'numeroDossier', sortable: true, filter: true, resizable: true },
-    { headerName: 'Etat', field: 'etat', sortable: true, filter: true, resizable: true }, // Ajout de la colonne Etat
+    { headerName: 'Intitulé', field: 'intitule', sortable: true, filter: true, resizable: true },
+    { headerName: "État", field: "etat", sortable: true, filter: true,
 
+      cellStyle: (params) => this.getEtatTextColorStyle(params)
+    },
     { headerName: 'Montant Estimé', field: 'montantEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Budget Estimé', field: 'budgetEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Durée Contrat', field: 'dureeContrat', sortable: true, filter: true, resizable: true },
@@ -87,7 +89,16 @@ export class GreAGreComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.addActionListeners();
   }
-
+  getEtatTextColorStyle(params: any): any {
+    if (params.value === 'EN_ATTENTE') {
+      return { 'color': '#ffeb3b', 'font-weight': 'bold' };  // Jaune
+    } else if (params.value === 'Terminé') {
+      return { 'color': '#4caf50', 'font-weight': 'bold' };  // Vert
+    } else if (params.value === 'Annulé') {
+      return { 'color': '#f44336', 'font-weight': 'bold' };  // Rouge
+    }
+    return {};
+  }
   getDossiersByTypeOnly(): void {
     this.loading = true;
     this.errorMessage = null;
@@ -166,5 +177,12 @@ export class GreAGreComponent implements OnInit, AfterViewInit {
 
   onGridReady(params: GridReadyEvent) {
     params.api.sizeColumnsToFit();
+  }
+  selectedType: string = '';
+  onTypeChange(): void {
+    if (this.selectedType) {
+      const encodedType = encodeURIComponent(this.selectedType);
+      this.router.navigate([`/dossier/${encodedType}`]);
+    }
   }
 }

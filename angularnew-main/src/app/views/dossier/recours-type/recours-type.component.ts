@@ -73,7 +73,7 @@ export class RecoursTypeComponent implements OnInit, AfterViewInit {
         const div = document.createElement('div');
 
         const editButton = document.createElement('button');
-        editButton.className = 'btn btn-warning btn-sm me-2';
+        editButton.className = 'btn btn-sm btn-primary edit-btn';
         editButton.innerText = 'Modifier';
         const dossierId = params.data?.id;
         editButton.addEventListener('click', () => {

@@ -127,73 +127,67 @@ export function getNavItems(storageService: StorageService): INavData[] {
         url: '/dossier/ajouter-dossier',
         icon: 'nav-icon-bullet'
       });
-    }
-    if (permissions.includes('GETDOSSIERBYUSER')) {
-      dossierMenu.children!.push({
-        name: 'Attribution',
-        url: '/dossier/dossier Attribution',
-        icon: 'nav-icon-bullet'
-      });}
       if (permissions.includes('GETDOSSIERBYUSER')) {
-        dossierMenu.children!.push({
-          name: 'LANCEMENT',
-          url: '/dossier/dossier Lancement',
-          icon: 'nav-icon-bullet'
-        });
-    }
-    if (permissions.includes('GETDOSSIERBYUSER')) {
-      dossierMenu.children!.push({
-        name: 'AVENANT',
-        url: '/dossier/dossier Avenant',
-        icon: 'nav-icon-bullet'
-      });
-    }
-    if (permissions.includes('GETDOSSIERBYUSER')) {
-      dossierMenu.children!.push({
-        name: 'Gre a Gre',
-        url: '/dossier/dossier Gre a Gre',
-        icon: 'nav-icon-bullet'
-      });
-    }
-    if (permissions.includes('GETDOSSIERBYUSER')) {
-      dossierMenu.children!.push({
-        name: 'RECOURS',
-        url: '/dossier/dossier Recours',
-        icon: 'nav-icon-bullet'
-      });
+        const gestionDossiers: INavData = {
+          name: 'Gestion des Dossiers',
+          url: '/dossier',
+          icon: 'nav-icon-folder',
+          children: []
+        };
+
+        if (permissions.includes('GETDOSSIERBYUSER')) {
+          gestionDossiers.children!.push({
+            name: 'Attribution',
+            url: '/dossier/dossier Attribution',
+            icon: 'nav-icon-bullet'
+          });
+        }
+
+        if (permissions.includes('GETDOSSIERBYUSER')) {
+          gestionDossiers.children!.push({
+            name: 'LANCEMENT',
+            url: '/dossier/dossier Lancement',
+            icon: 'nav-icon-bullet'
+          });
+        }
+
+        if (permissions.includes('GETDOSSIERBYUSER')) {
+          gestionDossiers.children!.push({
+            name: 'AVENANT',
+            url: '/dossier/dossier Avenant',
+            icon: 'nav-icon-bullet'
+          });
+        }
+
+        if (permissions.includes('GETDOSSIERBYUSER')) {
+          gestionDossiers.children!.push({
+            name: 'Gre à Gre',
+            url: '/dossier/dossier Gre a Gre',
+            icon: 'nav-icon-bullet'
+          });
+        }
+
+        if (permissions.includes('GETDOSSIERBYUSER')) {
+          gestionDossiers.children!.push({
+            name: 'RECOURS',
+            url: '/dossier/dossier Recours',
+            icon: 'nav-icon-bullet'
+          });
+        }
+
+        // On ajoute le sous-menu complet au menu principal "Dossier CME"
+        dossierMenu.children!.push(gestionDossiers);
+      }
+
     }
 
-    if (permissions.includes('GETALLDOSSIER')) {
+
+      if (permissions.includes('GETALLDOSSIER')) {
       const gestionDossiers: INavData = {
         name: 'Gestion des Dossiers',
-        url: '/dossier', // Peut être vide ou générique
+        url: '/dossier/dossier', // Peut être vide ou générique
         icon: 'nav-icon-folder',
         children: [
-          {
-            name: 'Dossier Avenant',
-            url: '/dossier/Avenant',
-            icon: 'nav-icon-bullet'
-          },
-          {
-            name: 'Dossier Attribution',
-            url: '/dossier/Attribution',
-            icon: 'nav-icon-bullet'
-          },
-          {
-            name: 'Dossier Recours',
-            url: '/dossier/Recours',
-            icon: 'nav-icon-bullet'
-          },
-          {
-            name: 'Dossier Gre à Gre',
-            url: '/dossier/Gre a Gre',
-            icon: 'nav-icon-bullet'
-          },
-          {
-            name: 'Dossier Lancement',
-            url: '/dossier/Lancement',
-            icon: 'nav-icon-bullet'
-          }
         ]
       };
 
@@ -214,6 +208,38 @@ export function getNavItems(storageService: StorageService): INavData[] {
     iconComponent: { name: 'cil-people' },
     children: [],
   };
+
+
+// Gestion des blacklist
+if (permissions.includes('GETALL') || permissions.includes('AJOUTERBLACK')) {
+  const blacklistMenu: INavData = {
+    name: 'blacklist',
+    url: '/blacklist',
+    iconComponent: { name: 'cil-description' },
+    children: [],
+  };
+
+  if (permissions.includes('GETALL')) {
+    blacklistMenu.children!.push({
+      name: 'Gestion des blacklist',
+      url: 'blacklist/voirblacklist',
+      icon: 'nav-icon-bullet'
+    });
+  }
+
+  if (permissions.includes('AJOUTERBLACK')) {
+    blacklistMenu.children!.push({
+      name: 'Ajouter un blacklist',
+      url: 'blacklist/ajouterblacklist',
+      icon: 'nav-icon-bullet'
+    });
+  }
+
+
+  if (blacklistMenu.children!.length > 0) {
+    navItems.push(blacklistMenu);
+  }
+}
 
   return navItems;
 }

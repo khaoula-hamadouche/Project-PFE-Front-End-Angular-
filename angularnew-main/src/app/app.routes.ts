@@ -47,6 +47,11 @@ export const routes: Routes = [
         path: 'pages',
         loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
       }
+      ,
+      {
+        path: 'blacklist',
+        loadChildren: () => import('./views/blacklist/routes').then((m) => m.routes)
+      }
     ]
   },
   {

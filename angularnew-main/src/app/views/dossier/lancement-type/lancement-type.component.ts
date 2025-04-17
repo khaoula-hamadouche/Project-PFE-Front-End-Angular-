@@ -73,7 +73,7 @@ export class LancementTypeComponent implements OnInit, AfterViewInit {
         const div = document.createElement('div');
 
         const editButton = document.createElement('button');
-        editButton.className = 'btn btn-warning btn-sm me-2';
+        editButton.className = 'btn btn-sm btn-primary edit-btn';
         editButton.innerText = 'Modifier';
         const dossierId = params.data?.id;
         editButton.addEventListener('click', () => {
@@ -158,11 +158,7 @@ export class LancementTypeComponent implements OnInit, AfterViewInit {
   }
 
   extractLancementSpecificDetails(details: any, typePassation: string): any {
-    if (typePassation === 'APPEL_OFFRE_LANCEMENT') {
-      return {
-        // Propriétés spécifiques à APPEL_OFFRE_LANCEMENT
-      };
-    } else if (typePassation === 'Consultation_Prestataire_de_Lancement' || typePassation === 'Consultation_Procurement_de_Lancement') {
+     if (typePassation === 'Consultation_Prestataire_de_Lancement' || typePassation === 'Consultation_Procurement_de_Lancement'||  typePassation === 'APPEL_OFFRE_LANCEMENT') {
       return {
         montantEstime: details?.montantEstime ?? 'N/A',
         budgetEstime: details?.budgetEstime ?? 'N/A',

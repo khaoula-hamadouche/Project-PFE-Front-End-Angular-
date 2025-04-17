@@ -66,4 +66,9 @@ export class DossierService {
   }
   getAllDossiers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/`,{withCredentials: true});
-  }}
+  }
+  checkFournisseur(nomFournisseur: string): Observable<boolean> {
+    const url = `http://localhost:8086/blacklist/check?nomFournisseur=${encodeURIComponent(nomFournisseur)}`;
+    return this.http.get<boolean>(url);
+  }
+}

@@ -3,18 +3,33 @@
     <c-card class="mb-4 shadow-sm">
       <c-card-body>
 
-        <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-3">
           <h5 class="mb-0">Gestion des dossiers</h5>
 
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-primary" (click)="generatePdfReport()">
-              <svg cIcon name="cilPrint"></svg> Rapport Général
-            </button>
+          <div class="d-flex gap-2 align-items-center">
+            <select class="form-select" [(ngModel)]="selectedType" (change)="onTypeChange()">
+              <option value="">-- Mode de passation --</option>
+              <option value="Gre">Gre à Gré</option>
+              <option value="Recours">Recours</option>
+              <option value="Attribution">Attribution</option>
+              <option value="Avenant">Avenant</option>
+              <option value="Lancement">Lancement</option>
+              <option value="dossier">Tout</option>
+            </select>
 
+            <button
+              type="button"
+              class="btn btn-primary"
+              style="height: 38px; display: flex; align-items: center;"
+              (click)="generatePdfReport()"
+            >
+              <svg cIcon name="cilPrint" class="me-1"></svg> Rapport
+            </button>
           </div>
         </div>
 
-        <!-- Tableau Ag-Grid -->
+
+          <!-- Tableau Ag-Grid -->
         <ag-grid-angular
           style="width: 100%; height:500px;"
           class="ag-theme-alpine"

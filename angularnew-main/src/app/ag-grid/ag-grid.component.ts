@@ -13,6 +13,7 @@ export class AgGridComponent {
 
   fournisseur: string = '';
   montant: string = '';
+  etablissement: string = '';
   isLoading: boolean = false; // Indicateur de chargement
 
   constructor(private http: HttpClient) {}
@@ -21,30 +22,31 @@ export class AgGridComponent {
   uploadPdf(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-
+  
     return this.http.post<string[]>(this.apiUrl, formData); // Retourne un tableau de chaînes
   }
-
+  
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
       this.isLoading = true;
-
+  
       this.uploadPdf(file).subscribe({
         next: (response) => {
           console.log('Réponse du serveur:', response);
-
+  
           // La chaîne de texte est retournée sous forme de tableau de chaînes
           const text = response[0];
-
+  
           // Extraction du fournisseur et du montant à l'aide d'expressions régulières
           const fournisseurMatch = text.match(/Fournisseur\s*:\s*([^\\n]+)/);
           const montantMatch = text.match(/Montant du contrat\s*:\s*([^\\n]+)/);
-
+          const etablissementMatch = text.match(/etablissement du contrat\s*:\s*([^\\n]+)/);
+  
           // Affecter les résultats ou 'Non spécifié' si non trouvé
           this.fournisseur = fournisseurMatch ? fournisseurMatch[1].trim() : 'Non spécifié';
           this.montant = montantMatch ? montantMatch[1].trim() : 'Non spécifié';
-
+          this.etablissement = etablissementMatch ? etablissementMatch[1].trim() : 'Non spécifié';
           this.isLoading = false;
         },
         error: (err) => {
@@ -54,6 +56,5 @@ export class AgGridComponent {
       });
     }
   }
-
+  
 }
-

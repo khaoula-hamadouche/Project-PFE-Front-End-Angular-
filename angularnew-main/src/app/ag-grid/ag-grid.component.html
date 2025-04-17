@@ -12,12 +12,13 @@
 </div>
 
 <!-- Afficher les informations si disponibles -->
-<div *ngIf="fournisseur || montant" class="mt-4">
+<div *ngIf="fournisseur || montant || etablissement " class="mt-4">
   <label>Fournisseur :</label>
   <input type="text" [value]="fournisseur" class="form-control" readonly />
 
+  
   <label class="mt-2">Montant du contrat :</label>
   <input type="text" [value]="montant" class="form-control" readonly />
+  <label class="mt-2">etablissement du contrat :</label>
+  <input type="text" [value]="etablissement" class="form-control" readonly />
 </div>
-
-
