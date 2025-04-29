@@ -39,8 +39,11 @@ export class GreAGreTypeComponent implements OnInit, AfterViewInit {
   columnDefs: ColDef[] = [
     { headerName: 'Intitulé', field: 'intitule', sortable: true, filter: true, resizable: true },
     { headerName: 'Numéro Dossier', field: 'numeroDossier', sortable: true, filter: true, resizable: true },
-    { headerName: 'Etat', field: 'etat', sortable: true, filter: true, resizable: true }, // Ajout de la colonne Etat
+    {
+      headerName: "État", field: "etat", sortable: true, filter: true,
 
+      cellStyle: (params) => this.getEtatTextColorStyle(params)
+    },
     { headerName: 'Montant Estimé', field: 'montantEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Budget Estimé', field: 'budgetEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Durée Contrat', field: 'dureeContrat', sortable: true, filter: true, resizable: true },
@@ -109,6 +112,18 @@ export class GreAGreTypeComponent implements OnInit, AfterViewInit {
     }
   ];
 
+getEtatTextColorStyle(params: any): any {
+  if (params.value === 'EN_ATTENTE') {
+    return { 'color': '#ffeb3b', 'font-weight': 'bold' };  // Jaune
+  } else if (params.value === 'VALIDE') {
+    return { 'color': '#4caf50', 'font-weight': 'bold' };  // Vert
+  } else if (params.value === 'REJETE') {
+    return { 'color': '#f44336', 'font-weight': 'bold' };  // Rouge
+  }else if (params.value === 'EN_TRAITEMENT') {
+    return { 'color': '#0d0795', 'font-weight': 'bold' };  // Rouge
+  }
+  return {};
+}
   defaultColDef = { flex: 1, minWidth: 120, resizable: true };
   paginationPageSize = 10;
   paginationPageSizeSelector = [1, 5, 10];

@@ -1,79 +1,72 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { UserService } from '../../../service/user.service';
+import { Component } from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { DossierService } from '../../../service/dossier.service';
+import Swal from 'sweetalert2';
+import {MatFormField} from "@angular/material/form-field";
+import {MatInput} from "@angular/material/input";
+import {MatButton} from "@angular/material/button";
+import { CommonModule } from "@angular/common";
+import { FormsModule} from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatSelectModule } from "@angular/material/select";
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatChipsModule } from '@angular/material/chips';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ajouter',
+  templateUrl: './ajouter.component.html',
+  styleUrls: ['./ajouter.component.scss'],
+  standalone: true,
   imports: [
+    ReactiveFormsModule,
+    FormsModule,
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSlideToggleModule
-  ],
-  templateUrl: './ajouter.component.html',
-  standalone: true,
-  styleUrls: ['./ajouter.component.scss']
+    MatFormField,
+    MatInput,
+    MatButton,
+    MatFormFieldModule
+  ]
 })
-export class AjouterComponent implements OnInit {
-  blacklistForm: FormGroup;  // <-- renommer ici
-  loading = false;
-private apiUrl = "http://localhost:8086/blacklist";
-blacklistFournisseur(fournisseur: any): Observable<any> {
-  return this.http.post(this.apiUrl, fournisseur, { withCredentials: true });
-}
-  constructor(private http: HttpClient,
-    private fb: FormBuilder,
-    private router: Router
-  ) {
+export class AjouterComponent {
+  blacklistForm: FormGroup;
+  message = '';
+
+  constructor(private fb: FormBuilder, private dossierService: DossierService, private router: Router ) {
     this.blacklistForm = this.fb.group({
       denomination: ['', Validators.required],
       activite: ['', Validators.required],
-      structureAyantDemandeExclusion: ['', Validators.required],
-      dateExclusion: [new Date().toISOString().substring(0, 10), Validators.required],
+      structureDemandeExclusion: ['', Validators.required],
+      dateExclusion: ['', Validators.required],
       motifs: ['', Validators.required],
-      duree: [null, [Validators.required, Validators.min(1)]],
-    });
+      dureeExclusion: [null, [Validators.required, Validators.min(1)]]
 
+    });
   }
 
-
-  ngOnInit(): void {}
-
-  ajouterFournisseur(): void {
+  onSubmit() {
     if (this.blacklistForm.valid) {
-      const fournisseurData = this.blacklistForm.value;
-      this.loading = true;
-
-      this.blacklistFournisseur(fournisseurData).subscribe({
-        next: (data) => {
-          console.log('Fournisseur blacklisté avec succès:', data);
-          this.router.navigate(['/base/fournisseurs-blacklistes']);
-        },
-        error: (error) => {
-          console.error("Erreur lors du blacklist:", error);
-          this.loading = false;
+      Swal.fire({
+        title: 'Confirmer l’ajout',
+        text: 'Voulez-vous vraiment ajouter ce fournisseur à la blacklist ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, ajouter',
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dossierService.addToBlacklist(this.blacklistForm.value).subscribe({
+            next: () => {
+              Swal.fire('Succès', 'Fournisseur ajouté à la blacklist avec succès.', 'success').then(() => {
+                this.router.navigate(['/blacklist/voir']);
+              });
+            },
+            error: () => {
+              Swal.fire('Erreur', 'Une erreur est survenue lors de l’ajout.', 'error');
+            }
+          });
         }
       });
     } else {
-      console.log('Formulaire invalide', this.blacklistForm.value);
+      Swal.fire('Formulaire invalide', 'Veuillez remplir tous les champs requis.', 'error');
     }
-  }
-
-  onCancel(): void {
-    this.router.navigate(['/base/fournisseurs-blacklistes']);
   }
 }

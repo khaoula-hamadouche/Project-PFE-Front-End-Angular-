@@ -11,13 +11,41 @@
     >
       <svg cIcon name="cilMenu" size="lg"></svg>
     </button>
-    <c-header-nav class="d-none d-md-flex">
-     
-      
-    </c-header-nav>
 
-    <c-header-nav class="d-none d-md-flex ms-auto ">
-    
+
+    <c-header-nav class="d-none d-md-flex ms-auto">
+      <!-- Bouton Notifications -->
+      <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
+        <button [caret]="false" cDropdownToggle class="position-relative" aria-label="Open notifications">
+          <svg cIcon name="cilBell" size="lg"></svg>
+          <span *ngIf="notifications.length > 0" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+        <span class="visually-hidden">New alerts</span>
+      </span>
+        </button>
+        <ul cDropdownMenu class="pt-0 w-auto" style="width: 300px;">
+
+          <li *ngIf="notifications.length === 0" class="text-center py-2 text-muted">
+            Aucune notification
+          </li>
+
+          <li *ngFor="let notif of notifications">
+            <a cDropdownItem class="d-flex flex-column">
+              <div class="fw-bold">{{ notif.subject }}</div>
+              <small class="text-muted">{{ notif.sentAt | date:'short' }}</small>
+              <div class="small text-truncate">{{ notif.content }}</div>
+            </a>
+          </li>
+
+          <li><hr cDropdownDivider /></li>
+
+          <li>
+            <a cDropdownItem routerLink="/mails/received" class="text-center">
+              Voir toutes les notifications
+            </a>
+          </li>
+
+        </ul>
+      </c-dropdown>
     </c-header-nav>
 
     <c-header-nav class="ms-auto ms-md-0">
@@ -35,7 +63,7 @@
     </c-header-nav>
 
   </c-container>
- 
+
 </ng-container>
 <!--</c-header>-->
 
@@ -65,10 +93,10 @@
         </a>
       </li>
       <li>
-       
+
       </li>
-     
-     
+
+
       <li>
         <h6 cDropdownHeader class="bg-body-secondary text-body-secondary fw-semibold py-2">
           Settings
@@ -87,16 +115,16 @@
           Settings
         </a>
       </li>
-      
+
       <li>
-       
+
       </li>
       <li>
         <hr cDropdownDivider />
-        
+
       </li>
       <li>
-       
+
       </li>
       <li>
         <a cDropdownItem (click)="onLogout()">

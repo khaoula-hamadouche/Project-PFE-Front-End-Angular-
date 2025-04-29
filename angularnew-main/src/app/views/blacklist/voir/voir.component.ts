@@ -34,23 +34,27 @@ import {
   CardBodyComponent, CardComponent, ColComponent, RowComponent, TextColorDirective
 } from '@coreui/angular';
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule } from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { Router } from "@angular/router";
 import { UserService } from "../../../service/user.service";
 import {IconDirective} from "@coreui/icons-angular";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { DossierService } from "../../../service/dossier.service";
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-voir',
   standalone: true,
-   imports: [AgGridAngular, CommonModule, TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, IconDirective],
-  
+  imports: [AgGridAngular, CommonModule, TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, IconDirective, FormsModule],
+
   templateUrl: './voir.component.html',
   styleUrl: './voir.component.scss'
 })
 export class VoirComponent {
   private apiUrl = "http://localhost:8086/blacklist";
+  nomFournisseur = '';
+  isBlacklisted: boolean | null = null;
     getAlls(): Observable<any[]> {
       return this.http.get<any[]>(`${this.apiUrl}`,{withCredentials: true});
     }
@@ -82,7 +86,7 @@ export class VoirComponent {
 
    constructor(private http: HttpClient,
     private router: Router,
-    private renderer: Renderer2
+    private renderer: Renderer2, private dossierService: DossierService
   ) {}
 
   ngOnInit(): void {
@@ -107,7 +111,7 @@ export class VoirComponent {
             return;
           }
 
-         
+
         }
       });
     }
@@ -131,7 +135,7 @@ export class VoirComponent {
           dateExclusion: fournisseur.dateExclusion,
           motifs: fournisseur.motifs,
           dureeExclusion: fournisseur.dureeExclusion,
-          
+
         }));
         console.log("Données des utilisateurs chargées :", this.rowData);
       },
@@ -152,6 +156,28 @@ export class VoirComponent {
   }
   generatePdfReport() {
     window.open('http://localhost:9091/generate-pdf', '_blank');
+  }
+  check() {
+    this.dossierService.checkFournisseur(this.nomFournisseur).subscribe({
+      next: (res) => {
+        this.isBlacklisted = res === true;
+        Swal.fire({
+          icon: this.isBlacklisted ? 'error' : 'success',
+          title: this.isBlacklisted ? 'Fournisseur blacklisté' : 'Fournisseur autorisé',
+          text: this.isBlacklisted
+            ? '⚠️ Ce fournisseur est dans la liste noire.'
+            : '✅ Ce fournisseur n’est pas blacklisté.'
+        });
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Une erreur est survenue lors de la vérification.'
+        });
+      }
+    });
   }
 }
 

@@ -17,10 +17,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
-import {MatDivider} from "@angular/material/divider";
-import {MatList, MatListItem} from "@angular/material/list";
-import {MatLine} from "@angular/material/core";
-import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import { MatDivider } from "@angular/material/divider";
+import { MatList, MatListItem } from "@angular/material/list";
+import { MatLine } from "@angular/material/core";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 interface FichierSupplementaire {
   nom: string;
@@ -53,39 +53,51 @@ interface FichierSupplementaire {
 export class AjouterDossierComponent implements OnInit {
   dossierForm!: FormGroup;
   passations: string[] = [];
+  typeFournisseurs: string[] = ['Local', 'Étranger'];
   selectedFichiers: string[] = [];
   fichiersSupplementaires: FichierSupplementaire[] = [];
   isFichierVisible: boolean = false;
+  nomFournisseur = '';
+  isBlacklisted: boolean | null = null;
 
   fichiersRequis: { [key: string]: string[] } = {
-    APPEL_OFFRE_LANCEMENT: ['Dossier de la consultation', 'Lettre d’opportunité', 'Fiche de validation','Fiche analytique'],
-    Consultation_Prestataire_de_Lancement:[ 'Dossier de consultation','Lettre d’opportunité', 'Fiche de validation','Fiche analytique'],
-    Consultation_Procurement_de_Lancement:['Dossier de consultation','Lettre d’opportunité', 'Fiche de validation','Fiche analytique'],
-    APPEL_OFFRE_ATTRIBUTION: ['Contrat', 'PVCNR', 'VISA CME', 'Avis d’attribution', 'Décision ad hoc', 'DST', 'Fiche de présentation', 'Lettre d’invitation', 'Offre financière','PV Adhoc','Situation SAP','PV COET', 'PV CEO', 'PV COP Technique', 'PV COP Financier'],
-    Consultation_Prestataire_dAttribution: ['Contrat', 'PVCNR', 'VISA CME', 'Avis d’attribution', 'Décision ad hoc', 'DST', 'Fiche de présentation', 'Lettre d’invitation', 'Offre financière','PV Adhoc','Situation SAP','PV COET', 'PV CEO', 'PV COP Technique', 'PV COP Financier'],
-    Consultation_Procurement_dAttribution: ['Contrat', 'PVCNR', 'VISA CME', 'Avis d’attribution', 'Décision ad hoc', 'DST', 'Fiche de présentation', 'Lettre d’invitation', 'Offre financière','PV Adhoc','Situation SAP','PV COET', 'PV CEO', 'PV COP Technique', 'PV COP Financier'],
-    GRE_A_GRE: ['Dossier de consultation', 'Lettre d’opportunité', 'Fiche de validation','Rapport circonstancié'],
-    AVENANT: ['Dossier de consultation', 'Lettre d’opportunité', 'Fiche de validation', 'Rapport circonstancié', 'Contrat'],
-    RECOURS: ['Dossier de consultation', 'Lettre d’opportunité', 'Cahier des charges','Offre']
+    APPEL_OFFRE_LANCEMENT: ['Dossier de la consultation', 'Lettre d’opportunité', 'Fiche de validation', 'Fiche analytique', 'DST', 'Visa budgetaire'],
+    Consultation_Prestataire_de_Lancement: ['Dossier de consultation', 'Lettre d’opportunité', 'Fiche de validation', 'Fiche analytique', 'DST', 'Visa budgetaire'],
+    Consultation_Procurement_de_Lancement: ['Dossier de consultation', 'Lettre d’opportunité', 'Fiche de validation', 'Fiche analytique', 'DST', 'Visa budgetaire'],
+    APPEL_OFFRE_ATTRIBUTION: ['Projet de Contrat', 'PVPNR', 'VISA Lancement CME', 'Avis d’attribution', 'Décision de commission adhoc', 'DST', 'Fiche de présentation', 'Lettre d’invitation', 'Offre financière', 'PV Adhoc', 'PV COET', 'PV CEO', 'PV COP Technique', 'PV COP Financier'],
+    Consultation_Prestataire_dAttribution: ['Contrat', 'PVCNR', 'VISA CME', 'Avis d’attribution', 'Décision ad hoc', 'DST', 'Fiche de présentation', 'Lettre d’invitation', 'Offre financière', 'PV Adhoc', 'Situation SAP', 'PV COET', 'PV CEO', 'PV COP Technique', 'PV COP Financier'],
+    Consultation_Procurement_dAttribution: ['Contrat', 'PVCNR', 'VISA CME', 'Avis d’attribution', 'Décision ad hoc', 'DST', 'Fiche de présentation', 'Lettre d’invitation', 'Offre financière', 'PV Adhoc', 'Situation SAP', 'PV COET', 'PV CEO', 'PV COP Technique', 'PV COP Financier'],
+    GRE_A_GRE: ['Dossier de consultation', 'Lettre d’opportunité', 'Fiche de validation', 'Rapport circonstancié'],
+    AVENANT: ['Lettre d’opportunité', 'Rapport circonstancié', 'Contrat'],
+    RECOURS: ['Dossier de consultation', 'Lettre d’opportunité', 'Cahier des charges', 'Offre']
   };
 
   DonneeRequis: { [key: string]: string[] } = {
-    APPEL_OFFRE_LANCEMENT: ['montantEstime', 'budgetEstime', 'dureeContrat','dureeRealisation'],
-    Consultation_Prestataire_de_Lancement:['montantEstime', 'budgetEstime', 'dureeContrat','dureeRealisation'],
-    Consultation_Procurement_de_Lancement:['montantEstime', 'budgetEstime', 'dureeContrat','dureeRealisation'],
-    APPEL_OFFRE_ATTRIBUTION: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'],
-    Consultation_Prestataire_dAttribution:  ['nomFournisseur', 'montantContrat', 'dureeContrat', 'fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'],
-    Consultation_Procurement_dAttribution: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'],
-    GRE_A_GRE: ['montantEstime', 'budgetEstime', 'dureeContrat','dureeRealisation'],
-    AVENANT: ['numeroContrat', 'dateSignatureContrat', 'dureeContrat', 'dateExpirationContrat', 'montantContrat', 'objetAvenant', 'montantAvenant', 'dureeAvenant'],
+    APPEL_OFFRE_LANCEMENT: ['numeroContrat', 'typologiemarche', 'Garantie', 'montantEstime', 'budgetEstime', 'delaiRealisation'],
+    Consultation_Prestataire_de_Lancement: ['typologiemarche', 'Garantie', 'montantEstime', 'budgetEstime', 'delaiRealisation'],
+    Consultation_Procurement_de_Lancement: ['typologiemarche', 'Garantie', 'montantEstime', 'budgetEstime', 'delaiRealisation'],
+    APPEL_OFFRE_ATTRIBUTION: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'delaiRealisation', 'typologidemarche', 'garantie', 'experiencefournisseur', 'nombredeprojetssimilaires', 'notationinterne', 'chiffreaffaire', 'situationfiscale', 'fournisseurblacklist', 'typeFournisseur'],
+    Consultation_Prestataire_dAttribution: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'delaiRealisation', 'typologidemarche', 'garantie', 'experiencefournisseur', 'nombredeprojetssimilaires', 'notationinterne', 'chiffreaffaire', 'situationfiscale', 'fournisseurblacklist', 'typeFournisseur'],
+    Consultation_Procurement_dAttribution: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'delaiRealisation', 'typologidemarche', 'garantie', 'experiencefournisseur', 'nombredeprojetssimilaires', 'notationinterne', 'chiffreaffaire', 'situationfiscale', 'fournisseurblacklist', 'typeFournisseur'],
+    GRE_A_GRE: ['montantEstime', 'budgetEstime', 'dureeContrat', 'delaiRealisation'],
+    AVENANT: ['numeroContrat', 'dateSignatureContrat', 'dureeContrat', 'dateExpirationContrat', 'montantContrat', 'objetAvenant', 'montantAvenant', 'dureeAvenant']
   };
 
   champLabels: { [key: string]: string } = {
     fournisseurEtranger: 'Fournisseur Étranger',
     fournisseurEtrangerInstallationPermanente: "Installation Permanente à l'Étranger",
     originePaysNonDoubleImposition: 'Origine - Pays sans Double Imposition',
+    budgetEstime: 'budgetEstime',
+    nombredeprojetssimilaires: 'nombre de projets similaires',
+    notationinterne: 'Notation interne',
+    Garantie: 'Garantie',
+    delaiRealisation: 'Delai Realisation',
+    typologiemarche: 'Typologie Marche',
+    chiffreaffaire: 'chiffre affaire',
+    situationfiscale: 'situation fiscale',
+    fournisseurblacklist: 'fournisseur blacklist',
+    typeFournisseur: 'Type de Fournisseur',
     montantEstime: 'Montant Estimé',
-    budgetEstime: 'Budget Estimé',
     dureeContrat: 'Durée du Contrat',
     dureeRealisation: 'Durée de Réalisation',
     nomFournisseur: 'Nom du Fournisseur',
@@ -95,18 +107,23 @@ export class AjouterDossierComponent implements OnInit {
     dateExpirationContrat: 'Date d’Expiration',
     objetAvenant: 'Objet de l’Avenant',
     montantAvenant: 'Montant de l’Avenant',
-    dureeAvenant: 'Durée de l’Avenant'
+    dureeAvenant: 'Durée de l’Avenant',
+    experiencefournisseur: 'experiencefournisseur',
+    fournisseurEtrangerDetails: 'Détails Fournisseur Étranger' // Bien que non utilisé directement dans DonneeRequis
   };
 
-  constructor(private fb: FormBuilder, private dossierService: DossierService, private router: Router) {}
+  constructor(private fb: FormBuilder, private dossierService: DossierService, private router: Router) { }
 
   ngOnInit(): void {
     this.dossierForm = this.fb.group({
       numeroDossier: ['', Validators.required],
       intitule: ['', Validators.required],
       typePassation: ['', Validators.required],
+      typeFournisseur: ['Local'], // Valeur par défaut
       fichiers: this.fb.array([]),
-      nomFichierSuppl: [''] // Add form control for nomFichierSuppl
+      nomFichierSuppl: [''],
+      installationPermanente: [false],
+      originePays: [false]
     });
 
     this.dossierService.getPassations().subscribe({
@@ -114,48 +131,47 @@ export class AjouterDossierComponent implements OnInit {
       error: (err) => console.error('Erreur de récupération des passations', err)
     });
   }
+
   onTypePassationChange(type: string) {
     const fichiersArray = this.dossierForm.get('fichiers') as FormArray;
     fichiersArray.clear();
     this.selectedFichiers = this.fichiersRequis[type] || [];
-
-    if (this.selectedFichiers.length === 0) {
-      console.log(`Aucun fichier requis pour ce type de passation: ${type}`);
-    }
 
     this.selectedFichiers.forEach(() => {
       fichiersArray.push(this.fb.control(null));
     });
 
     const anciensChamps = Object.keys(this.dossierForm.controls).filter(
-      champ => !['numeroDossier', 'intitule', 'typePassation', 'fichiers', 'nomFichierSuppl'].includes(champ)
+      champ => !['numeroDossier', 'intitule', 'typePassation', 'fichiers', 'nomFichierSuppl', 'typeFournisseur', 'installationPermanente', 'originePays'].includes(champ)
     );
     anciensChamps.forEach(champ => this.dossierForm.removeControl(champ));
 
     const champsSpecifiques = this.DonneeRequis[type] || [];
-    if (champsSpecifiques.length === 0) {
-      console.log(`Aucun champ requis pour ce type de passation: ${type}`);
-    }
-
     champsSpecifiques.forEach(champ => {
-      const isCheck = this.isCheckbox(champ);
-      this.dossierForm.addControl(champ, this.fb.control(isCheck ? false : '', Validators.required));
+      const validatorsArray = [Validators.required];
+      this.dossierForm.addControl(champ, this.fb.control('', validatorsArray));
     });
   }
 
-
-  isCheckbox(champ: string): boolean {
-    return ['fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'].includes(champ);
+  onTypeFournisseurChange(typeFournisseur: string) {
+    // Vous pouvez ajouter ici une logique supplémentaire si nécessaire en fonction du type de fournisseur.
+    if (typeFournisseur === 'Local') {
+      this.dossierForm.patchValue({ installationPermanente: false, originePays: false });
+      this.dossierForm.get('installationPermanente')?.clearValidators();
+      this.dossierForm.get('originePays')?.clearValidators();
+    } else if (typeFournisseur === 'Étranger') {
+      this.dossierForm.get('installationPermanente')?.setValidators([Validators.required]);
+      this.dossierForm.get('originePays')?.setValidators([Validators.required]);
+    }
+    this.dossierForm.get('installationPermanente')?.updateValueAndValidity();
+    this.dossierForm.get('originePays')?.updateValueAndValidity();
   }
-
 
   ajouterFichierSupplementaire() {
     const nomFichier = this.dossierForm.get('nomFichierSuppl')?.value;
     if (nomFichier && nomFichier.trim() !== '') {
       this.fichiersSupplementaires = [...this.fichiersSupplementaires, { nom: nomFichier.trim(), file: null }];
       this.dossierForm.patchValue({ nomFichierSuppl: '' });
-
-      // Add a new control to the 'fichiers' FormArray for the new file
       const fichiersArray = this.dossierForm.get('fichiers') as FormArray;
       fichiersArray.push(this.fb.control(null));
     } else {
@@ -184,6 +200,12 @@ export class AjouterDossierComponent implements OnInit {
     formData.append('numeroDossier', this.dossierForm.value.numeroDossier);
     formData.append('intitule', this.dossierForm.value.intitule);
     formData.append('typePassation', this.dossierForm.value.typePassation);
+    formData.append('typeFournisseur', this.dossierForm.value.typeFournisseur);
+
+    if (this.dossierForm.value.typeFournisseur === 'Étranger') {
+      formData.append('fournisseurEtrangerInstallationPermanente', this.dossierForm.value.installationPermanente ? 'true' : 'false');
+      formData.append('originePaysNonDoubleImposition', this.dossierForm.value.originePays ? 'true' : 'false');
+    }
 
     const fichiersArray = this.dossierForm.get('fichiers') as FormArray;
     fichiersArray.controls.forEach((control, index) => {
@@ -194,7 +216,6 @@ export class AjouterDossierComponent implements OnInit {
       }
     });
 
-    // Ajout des fichiers supplémentaires
     this.fichiersSupplementaires.forEach(fichier => {
       if (fichier.file) {
         formData.append('files', fichier.file);
@@ -202,8 +223,7 @@ export class AjouterDossierComponent implements OnInit {
       }
     });
 
-    // Ajout des champs spécifiques au type sélectionné
-    const champsSpecifiques = this.DonneeRequis[this.dossierForm.value.typePassation] || [];
+    const champsSpecifiques = Object.keys(this.dossierForm.controls).filter(key => !['numeroDossier', 'intitule', 'typePassation', 'typeFournisseur', 'fichiers', 'nomFichierSuppl', 'installationPermanente', 'originePays'].includes(key));
     champsSpecifiques.forEach(key => {
       const value = this.dossierForm.get(key)?.value;
       if (value !== null && value !== undefined) {
@@ -214,9 +234,9 @@ export class AjouterDossierComponent implements OnInit {
     this.dossierService.ajouterDossier(formData).subscribe({
       next: () => {
         this.isSubmitting = false;
-        alert('Le dossier a été ajouté avec succès !');  // Affichage de l'alerte
-        this.router.navigate(['/dossiers']);  // Redirection vers la liste des dossiers
-        this.dossierForm.reset();  // Réinitialisation du formulaire
+        alert('Le dossier a été ajouté avec succès !');
+        this.router.navigate(['/dossiers']);
+        this.dossierForm.reset();
       },
       error: (err) => {
         this.isSubmitting = false;
@@ -230,14 +250,9 @@ export class AjouterDossierComponent implements OnInit {
     if (!value) {
       return '';
     }
-    // Appliquer un format à la valeur, par exemple un format simple avec un préfixe
     const format = '2025/DOS/';
-    let numero = value.replace(format, ''); // Supprime le préfixe, si déjà présent
-    numero = numero.padStart(3, '0'); // Ajouter des zéros si nécessaire
-    return format + numero; // Retourner le format complet
+    let numero = value.replace(format, '');
+    numero = numero.padStart(3, '0');
+    return format + numero;
   }
-
-  }
-
-
-
+}

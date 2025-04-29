@@ -1,77 +1,46 @@
+<c-card-body>
+  <div class="d-flex justify-content-between mb-3">
+    <h5 class="mb-0">Gestion des emails Envoyés</h5>
+    <input
+      type="text"
+      class="form-control w-25"
+      placeholder="Rechercher..."
+      [(ngModel)]="searchTerm"
+      (input)="onSearchTermChange()"
+    >
+  </div>
 
-<c-row>
-  <c-col xs>
-    <c-card class="mb-4 shadow-sm">
-      <c-card-body>
-
-        <!-- Barre de recherche -->
-        <div class="d-flex justify-content-between mb-3">
-          <h5 class="mb-0">Gestion des emails Envoyes</h5>
-          <input type="text" class="form-control w-25" placeholder="Rechercher..." >
-        </div>
-
-        <table
-          [hover]="true"
-          [responsive]="true"
-          [striped]="true"
-          align="middle"
-          cTable
-          class="mb-0 border"
-        >
-          <thead class="text-nowrap text-truncate">
-          <tr>
-            <th class="bg-body-tertiary text-center">
-              <svg cIcon name="cilPeople"></svg>
-            </th>
-            <th class="bg-body-tertiary text-center">Titre</th>
-            <th class="bg-body-tertiary">Description</th>
-            <th class="bg-body-tertiary text-center">destintaire</th>
-            <th class="bg-body-tertiary">Expiditeur</th>
-            <th class="bg-body-tertiary text-center">date&heure</th>
-            <th class="bg-body-tertiary text-center">piece jointe</th>
-
-
-
-
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let email of emails">
-            <td class="text-center">
-              <div class="fw-bold">{{ email.id }}</div>
-            </td>
-            <td class="text-truncate">
-              <div class="fw-bold">{{ email.subject }}</div>
-            </td>
-            <td class="text-center">
-              <div class="fw-bold">{{ email.content }}</div>
-            </td>
-            <td class="text-truncate">
-              <div class="fw-bold">{{ email.recipient }}</div>
-            </td><td class="text-center">
-            <div class="fw-bold">{{ email.sender }}</div>
-          </td>
-            <td class="text-truncate">
-              <div class="fw-bold">{{ email.sentAt }}</div>
-            </td>
-            <td class="text-truncate text-center">
-              <button *ngIf="email.attachmentPath" class="btn btn-primary btn-sm"
-                      (click)="openAttachment(email.attachmentPath)">
-                Voir
+  <div *ngFor="let email of emails" class="mb-3">
+    <c-card class="shadow-sm" style="cursor: pointer;" (click)="viewEmailDetails(email.id)">
+      <c-card-body class="p-3">
+        <div class="d-flex align-items-center">
+          <div>
+            <svg cIcon name="cilEnvelopeOpen" size="xl"></svg>
+          </div>
+          <div class="ms-3 flex-grow-1">
+            <div class="d-flex justify-content-between">
+              <h6 class="mb-0 fw-bold text-truncate" [ngClass]="{'unread': !email.isRead}">{{ email.subject }}</h6>
+              <small class="text-muted" [ngClass]="{'unread': !email.isRead}">{{ email.sentAt | date:'short' }}</small>
+            </div>
+            <div class="text-muted text-truncate" [ngClass]="{'unread': !email.isRead}">{{ email.content }}</div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <small class="text-info" [ngClass]="{'unread': !email.isRead}">Destinataire: {{ email.recipient }}</small>
+              <small class="text-success" [ngClass]="{'unread': !email.isRead}">Expéditeur: {{ email.sender }}</small>
+              <button *ngIf="email.attachmentPath" class="btn btn-outline-primary btn-sm"
+                      (click)="openAttachment(email.attachmentPath); $event.stopPropagation()">
+                <svg cIcon name="cilPaperclip"></svg>
+                Pièce jointe
               </button>
-            </td>
-
-
-
-
-
-
-          </tr>
-          </tbody>
-        </table>
-
+            </div>
+          </div>
+        </div>
       </c-card-body>
     </c-card>
-  </c-col>
-</c-row>
+  </div>
+  <div class="d-flex justify-content-end align-items-center mt-3">
+    <button class="btn btn-primary me-2" [disabled]="currentPage === 0" (click)="goToPreviousPage()"> &lt; </button>
+    <span>Page {{ currentPage + 1 }}</span>
+    <button class="btn btn-primary ms-2" [disabled]="currentPage >= Math.ceil(allEmails.length / pageSize) - 1" (click)="goToNextPage()"> &gt; </button>
+  </div>
 
+</c-card-body>

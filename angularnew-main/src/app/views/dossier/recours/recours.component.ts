@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, OnInit, Renderer2 } from "@angular/core";
-import { AgGridAngular } from "ag-grid-angular";
-import { DossierService } from "../../../service/dossier.service";
-import { CommonModule } from "@angular/common";
+import {AfterViewInit, Component, OnInit, Renderer2} from "@angular/core";
+import {AgGridAngular} from "ag-grid-angular";
+import {DossierService} from "../../../service/dossier.service";
+import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {
   CardBodyComponent, CardComponent, ColComponent, RowComponent, TextColorDirective
@@ -11,7 +11,7 @@ import {
   NumberFilterModule, TextFilterModule, ValidationModule, PaginationModule,
   DateFilterModule, NumberEditorModule, TextEditorModule, ColumnAutoSizeModule, CellStyleModule, ICellRendererParams
 } from "ag-grid-community";
-import { Router } from "@angular/router";
+import {Router} from "@angular/router";
 
 ModuleRegistry.registerModules([
   ColumnAutoSizeModule, NumberEditorModule, TextEditorModule, TextFilterModule,
@@ -36,12 +36,13 @@ export class RecoursComponent implements OnInit, AfterViewInit {
   errorMessage: string | null = null;
 
   columnDefs: ColDef[] = [
-    { headerName: 'Numéro Dossier', field: 'numeroDossier', sortable: true, filter: true, resizable: true },
-    { headerName: 'Intitulé', field: 'intitule', sortable: true, filter: true, resizable: true },
-    { headerName: "État", field: "etat", sortable: true, filter: true,
+    {headerName: 'Numéro Dossier', field: 'numeroDossier', sortable: true, filter: true, resizable: true},
+    {headerName: 'Intitulé', field: 'intitule', sortable: true, filter: true, resizable: true},
+    {
+      headerName: "État", field: "etat", sortable: true, filter: true,
 
       cellStyle: (params) => this.getEtatTextColorStyle(params)
-    },    { headerName: 'Chargé', field: 'chargeDossier', sortable: true, filter: true, resizable: true },
+    }, {headerName: 'Chargé', field: 'chargeDossier', sortable: true, filter: true, resizable: true},
     {
       headerName: "Date Soumission",
       field: "dateSoumission",
@@ -68,14 +69,45 @@ export class RecoursComponent implements OnInit, AfterViewInit {
       },
       width: 250,
     },
+    {
+      headerName: 'Action',
+      field: 'action',
+      cellRenderer: (params: ICellRendererParams) => {
+        const button = document.createElement('button');
+        button.className = 'btn btn-success btn-sm';
+        button.innerText = '🛠️ Traitement';
+        const dossierId = params.data?.id;
+
+        button.addEventListener('click', () => {
+          if (dossierId) {
+            // Appeler le service pour changer l'état AVANT de naviguer
+            this.dossierService.changerEtatDossier(dossierId, 'EN_TRAITEMENT').subscribe({
+              next: () => {
+                // Quand l'état est changé avec succès, on navigue
+                this.router.navigate([`/dossier/traitement/${dossierId}`]);
+              },
+              error: (error) => {
+                console.error('Erreur lors du changement d\'état', error);
+              }
+            });
+          }
+        });
+
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(button);
+        return fragment;
+      },
+      width: 200,
+    }
 
   ];
 
-  defaultColDef = { flex: 1, minWidth: 120, resizable: true };
+  defaultColDef = {flex: 1, minWidth: 120, resizable: true};
   paginationPageSize = 10;
   paginationPageSizeSelector = [1, 5, 10];
 
-  constructor(private dossierService: DossierService, private router: Router, private renderer: Renderer2) {}
+  constructor(private dossierService: DossierService, private router: Router, private renderer: Renderer2) {
+  }
 
   ngOnInit(): void {
     this.getDossiersByTypeOnly();
@@ -89,7 +121,7 @@ export class RecoursComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.errorMessage = null;
 
-    this.dossierService.getDossiersByTypeOnly("RECOURS").subscribe( (data) => {
+    this.dossierService.getDossiersByTypeOnly("RECOURS").subscribe((data) => {
         console.log("✅ Données RECOURS reçues :", data);
 
         this.rowData = data.map((dossier: any) => ({
@@ -110,17 +142,22 @@ export class RecoursComponent implements OnInit, AfterViewInit {
       (error) => {
         console.error('❌ Erreur lors de la récupération des dossiers RECOURS :', error);
       }
-    );}
+    );
+  }
+
   getEtatTextColorStyle(params: any): any {
     if (params.value === 'EN_ATTENTE') {
       return { 'color': '#ffeb3b', 'font-weight': 'bold' };  // Jaune
-    } else if (params.value === 'Terminé') {
+    } else if (params.value === 'VALIDE') {
       return { 'color': '#4caf50', 'font-weight': 'bold' };  // Vert
-    } else if (params.value === 'Annulé') {
+    } else if (params.value === 'REJETE') {
       return { 'color': '#f44336', 'font-weight': 'bold' };  // Rouge
+    }else if (params.value === 'EN_TRAITEMENT') {
+      return { 'color': '#0d0795', 'font-weight': 'bold' };  // Rouge
     }
     return {};
   }
+
   private formatDate(date: string | null): string {
     if (!date) return "N/A";
     const parsedDate = new Date(date);

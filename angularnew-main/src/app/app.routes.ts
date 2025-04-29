@@ -85,6 +85,14 @@ export const routes: Routes = [
     }
   },
   {
+    path: 'Message',
+    loadComponent: () => import('./notification-button/notification-button.component').then(m => m.NotificationButtonComponent),
+    data: {
+      title: 'grid Page'
+    }
+  },
+
+  {
     path: 'register',
     loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
     data: {

@@ -1,6 +1,7 @@
-import { NgTemplateOutlet } from '@angular/common';
+import {DatePipe, NgTemplateOutlet} from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import {
   AvatarComponent,
@@ -23,14 +24,18 @@ import {
 
 import { IconDirective } from '@coreui/icons-angular';
 import { JwtService } from '../../../service/jwt.service';
+import { EmailService } from 'src/app/service/email.service'; // importe ton service email
+import { interval } from 'rxjs';
+
+
 
 @Component({
     selector: 'app-default-header',
     templateUrl: './default-header.component.html',
-  imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, RouterLink,  NgTemplateOutlet, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective]
+  imports: [ContainerComponent,CommonModule, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, RouterLink, NgTemplateOutlet, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective, DatePipe]
 })
 export class DefaultHeaderComponent extends HeaderComponent {
-
+  notifications: any[] = [];
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
 
@@ -45,14 +50,33 @@ export class DefaultHeaderComponent extends HeaderComponent {
     return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
-  constructor(private authService: JwtService) {
+  constructor(private authService: JwtService,private emailService: EmailService) {
     super();
   }
 
   sidebarId = input('sidebar1');
 
-  
-   // Méthode appelée lors du clic sur le bouton de déconnexion
+  ngOnInit(): void {
+    this.loadLastThreeNotifications();
+  }
+
+  loadLastThreeNotifications(): void {
+    this.emailService.getemailsrecevoir().subscribe(
+      (data: any[]) => {
+        if (data && data.length > 0) {
+          this.notifications = data.slice(-3).reverse(); // ⚡ Garde seulement les 3 dernières notifications
+        } else {
+          this.notifications = [];
+        }
+      },
+      (error) => {
+        console.error('Erreur lors du chargement des notifications', error);
+      }
+    );
+  }
+
+
+  // Méthode appelée lors du clic sur le bouton de déconnexion
    onLogout(): void {
      this.authService.logout();
    }

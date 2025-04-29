@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
+export interface BlacklistDTO {
+  denomination: string;
+  activite: string;
+  structureDemandeExclusion: string;
+  dateExclusion: string;
+  motifs: string;
+  dureeExclusion: number;
+}
 interface Dossier {
   numeroDossier: string;
   intitule: string;
@@ -34,6 +42,7 @@ export class DossierService {
   private apiUrl = 'http://localhost:8085/api/dossiers';
   private passationUrl = 'http://localhost:8085/api/passations'; // API pour Enum
   private  pdfUrl = 'http://localhost:9091/generate-merged-files-pdf';
+ private listUrl  = 'http://localhost:8086/blacklist';
   constructor(private http: HttpClient) {}
 
   ajouterDossier(formData: FormData): Observable<any> {
@@ -61,14 +70,24 @@ export class DossierService {
   getDossierById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`,{withCredentials: true});
   }
+  getDossierByNumeroDossier(numeroDossier: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/byNumeroDossier/${numeroDossier}`, { withCredentials: true });
+  }
   mergePdfFiles(files: string[],id: number): Observable<any> {
     return this.http.post<any>(`${this.pdfUrl}/${id}`, {withCredentials: true});
   }
   getAllDossiers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/`,{withCredentials: true});
   }
+
+  addToBlacklist(data: BlacklistDTO): Observable<any> {
+    return this.http.post(`${this.listUrl}`, data, { withCredentials: true });
+  }
+
   checkFournisseur(nomFournisseur: string): Observable<boolean> {
-    const url = `http://localhost:8086/blacklist/check?nomFournisseur=${encodeURIComponent(nomFournisseur)}`;
-    return this.http.get<boolean>(url);
+    return this.http.get<boolean>(`${this.listUrl}/check?nomFournisseur=${encodeURIComponent(nomFournisseur)}`, { withCredentials: true });
+  }
+  changerEtatDossier(id: number, nouvelEtat: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/changer-etat?nouvelEtat=${nouvelEtat}`, {withCredentials: true });
   }
 }

@@ -84,7 +84,18 @@ export const routes: Routes = [
         path: 'dossier Recours',
         loadComponent: () => import('./recours-type/recours-type.component').then(m => m.RecoursTypeComponent),
 
+      },
+      {
+        path: 'confirmation',
+        loadComponent: () => import('./confirm/confirm.component').then(m => m.ConfirmComponent),
+
+      },
+      {
+        path: 'traitement/:id',
+        loadComponent: () => import('./traitement/traitement.component').then(m => m.TraitementComponent),
+
       }
+
     ]
   }
 ];

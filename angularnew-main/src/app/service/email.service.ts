@@ -42,4 +42,7 @@ export class EmailService {
   getemailsrecevoir(): Observable<any> {
     return this.http.get(`${BASE_URL}received`, { withCredentials: true }); // ✅ Ajout de withCredentials
   }
+  getEmailById(id: number): Observable<any> {
+    return this.http.get(`${BASE_URL}${id}`, { withCredentials: true }); // Assurez-vous que votre API a cette route
+  }
 }

@@ -1,0 +1,194 @@
+<h3 class="title">🗂️ Traitement de Dossier N° : {{ dossierDetails?.dossier?.numeroDossier }}</h3>
+
+<mat-stepper orientation="vertical" [linear]="false" class="stepper-container mat-elevation-z8" #stepper>
+
+  <!-- Étape 1 : Informations -->
+
+  <mat-step [stepControl]="infoFormGroup">
+    <form [formGroup]="infoFormGroup" class="step-form">
+      <ng-template matStepLabel>
+        <mat-icon color="primary">folder_open</mat-icon> Informations du Dossier
+      </ng-template>
+
+      <mat-card class="custom-card">
+        <mat-card-header>
+          <br>
+          <mat-card-title><mat-icon>info</mat-icon> Informations Générales</mat-card-title>
+          <br>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <p><strong>Numéro :</strong> {{ dossierDetails?.dossier?.numeroDossier }}</p>
+            <p><strong>Intitulé :</strong> {{ dossierDetails?.dossier?.intitule }}</p>
+            <p><strong>État :</strong> {{ dossierDetails?.dossier?.etat }}</p>
+            <p><strong>Type de Passation :</strong> {{ dossierDetails?.dossier?.typePassation }}</p>
+            <p><strong>Date Soumission :</strong> {{ dossierDetails?.dossier?.dateSoumission | date:'longDate' }}</p>
+            <p><strong>Chargé :</strong> {{ dossierDetails?.chargeDossier?.name }} ({{ dossierDetails?.chargeDossier?.email }})</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <br>
+      <div *ngIf="dossierDetails?.details" class="details-section">
+        <mat-card class="custom-card">
+          <mat-card-header>
+            <br>
+            <mat-card-title><mat-icon>description</mat-icon> Détails Spécifiques</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <br>
+            <!-- Affichage conditionnel -->
+            <div *ngIf="['APPEL_OFFRE_LANCEMENT', 'Consultation_Prestataire_de_Lancement', 'Consultation_Procurement_de_Lancement', 'GRE_A_GRE'].includes(dossierDetails?.dossier?.typePassation)">
+              <p><strong>Montant Estimé :</strong> {{ dossierDetails?.details?.montantEstime | number:'1.0-0' }} </p>
+              <p><strong>Budget Estimé :</strong> {{ dossierDetails?.details?.budgetEstime | number:'1.0-0' }} </p>
+              <p><strong>Durée Contrat :</strong> {{ dossierDetails?.details?.dureeContrat }} mois</p>
+              <p><strong>Durée Réalisation :</strong> {{ dossierDetails?.details?.dureeRealisation }} moins</p>
+            </div>
+
+            <div *ngIf="['APPEL_OFFRE_ATTRIBUTION', 'Consultation_Prestataire_dAttribution', 'Consultation_Procurement_dAttribution'].includes(dossierDetails?.dossier?.typePassation)">
+              <p><strong>Fournisseur :</strong> {{ dossierDetails?.details?.nomFournisseur }}</p>
+              <p><strong>Montant :</strong> {{ dossierDetails?.details?.montantContrat | number:'1.0-0' }} €</p>
+              <p><strong>Durée :</strong> {{ dossierDetails?.details?.dureeContrat }} mois</p>
+              <p><strong>Étranger :</strong> {{ dossierDetails?.details?.fournisseurEtranger ? 'Oui' : 'Non' }}</p>
+              <p><strong>Installation Permanente :</strong> {{ dossierDetails?.details?.fournisseurEtrangerInstallationPermanente ? 'Oui' : 'Non' }}</p>
+              <p><strong>Origine :</strong> {{ dossierDetails?.details?.originePaysNonDoubleImposition }}</p>
+            </div>
+
+            <div *ngIf="dossierDetails?.dossier?.typePassation === 'AVENANT'">
+              <p><strong>Numéro Contrat :</strong> {{ dossierDetails?.details?.numeroContrat }}</p>
+              <p><strong>Date Signature :</strong> {{ dossierDetails?.details?.dateSignatureContrat | date:'longDate' }}</p>
+              <p><strong>Durée :</strong> {{ dossierDetails?.details?.dureeContrat }} mois</p>
+              <p><strong>Expiration :</strong> {{ dossierDetails?.details?.dateExpirationContrat | date:'longDate' }}</p>
+              <p><strong>Montant :</strong> {{ dossierDetails?.details?.montantContrat | number:'1.0-0' }} </p>
+              <p><strong>Objet :</strong> {{ dossierDetails?.details?.objetAvenant }}</p>
+              <p><strong>Montant Avenant :</strong> {{ dossierDetails?.details?.montantAvenant | number:'1.0-0' }} </p>
+              <p><strong>Durée Avenant :</strong> {{ dossierDetails?.details?.dureeAvenant }} mois</p>
+              <p><strong>Nouveau Montant :</strong> {{ dossierDetails?.details?.nouveauMontantContrat | number:'1.0-0' }} </p>
+              <p><strong>Nouvelle Durée :</strong> {{ dossierDetails?.details?.nouvelleDureeContrat }} mois</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+<br>
+      <div class="actions">
+        <button mat-raised-button color="primary" matStepperNext>Suivant</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <!-- Étape 2 : Fichiers -->
+  <br>
+  <mat-step [stepControl]="filesFormGroup">
+    <form [formGroup]="filesFormGroup" class="step-form">
+      <ng-template matStepLabel>
+        <mat-icon color="accent">attach_file</mat-icon> Fichiers Associés
+      </ng-template>
+
+      <mat-card class="custom-card">
+        <mat-card-header>
+          <mat-card-title><mat-icon>folder_zip</mat-icon> Documents liés</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="file-list">
+            <li *ngFor="let file of dossierDetails?.fileDetails | keyvalue">
+              <a [href]="file.value" target="_blank" class="file-link">
+                <mat-icon>file_present</mat-icon> {{ file.key }}
+              </a>
+            </li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+<br>
+      <div class="actions">
+        <button mat-raised-button color="warn" matStepperPrevious>Presedent</button>
+        <button mat-raised-button color="primary" matStepperNext>Suivant</button>
+      </div>
+    </form>
+  </mat-step>
+<br>
+  <!-- Étape 3 : Validation -->
+  <mat-step [stepControl]="doneFormGroup">
+    <form [formGroup]="doneFormGroup" class="step-form">
+
+      <ng-template matStepLabel>
+        <mat-icon color="primary">check_circle</mat-icon> Validation et Compte Rendu
+      </ng-template>
+
+      <mat-card class="custom-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>verified</mat-icon> Finalisation
+          </mat-card-title>
+        </mat-card-header>
+<br>
+        <mat-card-content class="checkbox-section">
+          <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Typologie du marché</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Montant du contrat</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Garantie</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Délai de réalisation</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Expérience fournisseur</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Nombre de projets similaires</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Notation interne</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Chiffre d'affaire</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Situation fiscale</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+            <div style="flex: 0 0 48%; display: flex; align-items: center;">
+              <span style="width: 250px;">Fournisseur blacklisté</span>
+              <mat-slide-toggle></mat-slide-toggle>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <br>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Compte Rendu</mat-label>
+        <textarea matInput placeholder="Saisir ici..." formControlName="compteRenduCtrl"
+                  style="height: 100px; width: 100%; padding: 10px; border-radius: 8px; resize: vertical;"></textarea>
+      </mat-form-field>
+
+      <br>
+
+      <div class="actions" style="display: flex; justify-content: space-between; margin-top: 16px;">
+        <button mat-raised-button color="warn" matStepperPrevious>Précédent</button>
+        <div style="display: flex; gap: 8px;">
+          <button mat-raised-button color="accent" (click)="onChangerEtat(dossierDetails?.dossier?.id, 'REJETE')">
+            Refuser
+          </button>
+          <button mat-raised-button color="primary" (click)="onChangerEtat(dossierDetails?.dossier?.id, 'VALIDE')">
+            Valider
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </mat-step>
+
+</mat-stepper>

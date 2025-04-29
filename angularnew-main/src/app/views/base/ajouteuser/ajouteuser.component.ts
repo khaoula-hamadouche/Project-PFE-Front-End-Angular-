@@ -9,24 +9,14 @@ import { Router } from '@angular/router';
 import { UserService } from '../../../service/user.service';
 
 import { Observable } from 'rxjs';
-
 import { map } from 'rxjs/operators';
-
 import { MatFormFieldModule } from "@angular/material/form-field";
-
 import { MatSelectChange, MatSelectModule } from "@angular/material/select";
-
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
-
 import { MatButtonModule } from '@angular/material/button';
-
 import { MatIconModule } from '@angular/material/icon';
-
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
 import { MatChipsModule } from '@angular/material/chips';
 
-import {MatProgressBar} from "@angular/material/progress-bar";
 
 
 
@@ -48,7 +38,6 @@ import {MatProgressBar} from "@angular/material/progress-bar";
 
     MatSelectModule,
 
-    MatProgressSpinner,
 
     MatChipsModule,
 
@@ -58,12 +47,12 @@ import {MatProgressBar} from "@angular/material/progress-bar";
 
     MatSlideToggleModule,
 
-    MatProgressBar
 
   ],
 
   changeDetection: ChangeDetectionStrategy.OnPush,
 
+  standalone: true
 })
 
 export class AppajouteuserComponent implements OnInit {

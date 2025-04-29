@@ -26,6 +26,11 @@ export const routes: Routes = [
         path: 'received',
         loadComponent: () => import('./received/received.component').then(m => m.ReceivedComponent),
 
+      },
+      {
+        path: 'details/:id',
+        loadComponent: () => import('./email-details/email-details.component').then(m => m.EmailDetailsComponent),
+
       }
     ]
   }

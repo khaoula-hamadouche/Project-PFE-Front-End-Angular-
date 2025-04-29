@@ -59,9 +59,6 @@ export class DossierFilesComponent implements OnInit {
     return fileDetails ? Object.keys(fileDetails) : [];
   }
 
-  getAddedByUserName(): string {
-    return this.dossier?.chargeDossier?.name || 'N/A';
-  }
 
   openMergedPdf() {
     const url = `http://localhost:9091/generate-merged-files-pdf/${this.dossierId}`;
@@ -85,9 +82,5 @@ export class DossierFilesComponent implements OnInit {
     window.open(fileUrl, '_blank');
   }
 
-  // Nouvelle méthode de débogage
-  logUrl(url: string) {
-    console.log('URL du fichier:', url);
-    this.openFile(url); // Appelez ensuite votre fonction openFile réelle
-  }
+
 }
