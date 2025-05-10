@@ -37,20 +37,44 @@
           <mat-card-content>
             <br>
             <!-- Affichage conditionnel -->
-            <div *ngIf="['APPEL_OFFRE_LANCEMENT', 'Consultation_Prestataire_de_Lancement', 'Consultation_Procurement_de_Lancement', 'GRE_A_GRE'].includes(dossierDetails?.dossier?.typePassation)">
+
+            <div *ngIf="['GRE_A_GRE'].includes(dossierDetails?.dossier?.typePassation)">
               <p><strong>Montant Estimé :</strong> {{ dossierDetails?.details?.montantEstime | number:'1.0-0' }} </p>
               <p><strong>Budget Estimé :</strong> {{ dossierDetails?.details?.budgetEstime | number:'1.0-0' }} </p>
-              <p><strong>Durée Contrat :</strong> {{ dossierDetails?.details?.dureeContrat }} mois</p>
-              <p><strong>Durée Réalisation :</strong> {{ dossierDetails?.details?.dureeRealisation }} moins</p>
+              <p><strong>Delai Réalisation :</strong> {{ dossierDetails?.details?.delaiRealisation }} moins</p>
+              <p><strong>Duree Contrat :</strong> {{ dossierDetails?.details?.dureeContrat }} moins</p>
+
+            </div>
+
+
+            <div *ngIf="['APPEL_OFFRE_LANCEMENT', 'Consultation_Prestataire_de_Lancement', 'Consultation_Procurement_de_Lancement'].includes(dossierDetails?.dossier?.typePassation)">
+              <p><strong>Montant Estimé :</strong> {{ dossierDetails?.details?.montantEstime | number:'1.0-0' }} </p>
+              <p><strong>Budget Estimé :</strong> {{ dossierDetails?.details?.budgetEstime | number:'1.0-0' }} </p>
+              <p><strong>Typologie de marche :</strong> {{ dossierDetails?.details?.typologidemarche }} </p>
+              <p><strong>Delai Réalisation :</strong> {{ dossierDetails?.details?.delaiRealisation }} moins</p>
+              <p><strong>Garantie :</strong> {{ dossierDetails?.details?.garantie }} </p>
+
             </div>
 
             <div *ngIf="['APPEL_OFFRE_ATTRIBUTION', 'Consultation_Prestataire_dAttribution', 'Consultation_Procurement_dAttribution'].includes(dossierDetails?.dossier?.typePassation)">
               <p><strong>Fournisseur :</strong> {{ dossierDetails?.details?.nomFournisseur }}</p>
-              <p><strong>Montant :</strong> {{ dossierDetails?.details?.montantContrat | number:'1.0-0' }} €</p>
+              <p><strong>Montant :</strong> {{ dossierDetails?.details?.montantContrat | number:'1.0-0' }} DA</p>
               <p><strong>Durée :</strong> {{ dossierDetails?.details?.dureeContrat }} mois</p>
               <p><strong>Étranger :</strong> {{ dossierDetails?.details?.fournisseurEtranger ? 'Oui' : 'Non' }}</p>
               <p><strong>Installation Permanente :</strong> {{ dossierDetails?.details?.fournisseurEtrangerInstallationPermanente ? 'Oui' : 'Non' }}</p>
-              <p><strong>Origine :</strong> {{ dossierDetails?.details?.originePaysNonDoubleImposition }}</p>
+              <p><strong>delaiRealisation :</strong> {{ dossierDetails?.details?.delaiRealisation }}</p>
+
+              <p><strong>typologiE de marche :</strong> {{ dossierDetails?.details?.typologidemarche}}</p>
+              <p><strong> Garantie :</strong> {{ dossierDetails?.details?.garantie }}</p>
+              <p><strong>Nombre de projets similaires :</strong> {{ dossierDetails?.details?.nombredeprojetssimilaires }}</p>
+              <p><strong>Notation interne:</strong> {{ dossierDetails?.details?.notationinterne }}</p>
+              <p><strong>Chiffre affaire :</strong> {{ dossierDetails?.details?.chiffreaffaire}}</p>
+              <p><strong>Situation fiscale :</strong> {{ dossierDetails?.details?.situationfiscale}}</p>
+              <p><strong>Fournisseur blacklist :</strong> {{ dossierDetails?.details?.fournisseurblacklist}}</p>
+              <p><strong>type fournisseur:</strong> {{ dossierDetails?.details?.typefournisseur}}</p>
+              <p><strong>fournisseur Etranger Installation Permanente</strong> {{ dossierDetails?.details?.fournisseurEtrangerInstallationPermanente? 'Oui' : 'Non' }}</p>
+              <p><strong>origine Pays Non Double Imposition :</strong> {{ dossierDetails?.details?.originePaysNonDoubleImposition ? 'Oui' : 'Non' }}</p>
+
             </div>
 
             <div *ngIf="dossierDetails?.dossier?.typePassation === 'AVENANT'">

@@ -45,7 +45,7 @@ export class GreAGreComponent implements OnInit, AfterViewInit {
     { headerName: 'Montant Estimé', field: 'montantEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Budget Estimé', field: 'budgetEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Durée Contrat', field: 'dureeContrat', sortable: true, filter: true, resizable: true },
-    { headerName: 'Durée Réalisation', field: 'dureeRealisation', sortable: true, filter: true, resizable: true },
+    { headerName: 'Delai Réalisation', field: 'delaiRealisation', sortable: true, filter: true, resizable: true },
     { headerName: 'Chargé', field: 'chargeDossier', sortable: true, filter: true, resizable: true },
     {
       headerName: "Date Soumission",
@@ -152,7 +152,7 @@ export class GreAGreComponent implements OnInit, AfterViewInit {
           montantEstime: dossier.details?.montantEstime ?? 'N/A',
           budgetEstime: dossier.details?.budgetEstime ?? 'N/A',
           dureeContrat: dossier.details?.dureeContrat ?? 'N/A',
-          dureeRealisation: dossier.details?.dureeRealisation ?? 'N/A',
+          delaiRealisation: dossier.details?.delaiRealisation ?? 'N/A',
         }));
         console.log("✅ rowData GRE_A_GRE après mapping :", this.rowData);
       },

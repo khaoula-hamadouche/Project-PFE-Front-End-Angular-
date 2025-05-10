@@ -90,4 +90,8 @@ export class DossierService {
   changerEtatDossier(id: number, nouvelEtat: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/changer-etat?nouvelEtat=${nouvelEtat}`, {withCredentials: true });
   }
+  getStatsParEtat(): Observable<{ [key: string]: number }> {
+    return this.http.get<{ [key: string]: number }>('http://localhost:8085/api/dossiers/stats/etat');
+  }
+
 }

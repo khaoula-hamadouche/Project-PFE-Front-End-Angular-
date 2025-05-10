@@ -63,21 +63,20 @@ export class AttributionComponent implements OnInit, AfterViewInit {
       cellRenderer: (params: any) => this.renderNomFournisseur(params)
     },
     { headerName: 'Montant Contrat', field: 'montantContrat', sortable: true, filter: true, resizable: true },
-    { headerName: 'Durée Contrat', field: 'dureeContratAttribution', sortable: true, filter: true, resizable: true },
-    {
-      headerName: 'Fournisseur Etranger', field: 'fournisseurEtranger', sortable: true, filter: true, resizable: true,
-      valueFormatter: (params) => params.value ? 'Oui' : 'Non'
-    },
-    {
-      headerName: 'Installation Permanente (Etranger)', field: 'fournisseurEtrangerInstallationPermanente',
-      sortable: true, filter: true, resizable: true,
-      valueFormatter: (params) => params.value ? 'Oui' : 'Non'
-    },
-    {
-      headerName: 'Origine Pays Non Double Imposition', field: 'originePaysNonDoubleImposition',
-      sortable: true, filter: true, resizable: true,
-      valueFormatter: (params) => params.value ? 'Oui' : 'Non'
-    },
+    { headerName: 'Durée Contrat', field: 'dureeContrat', sortable: true, filter: true, resizable: true }, // Renommé pour éviter la confusion
+    { headerName: 'delai Realisation', field: 'delaiRealisation', sortable: true, filter: true, resizable: true },
+    { headerName: 'typologie de marche', field: 'typologidemarche', sortable: true, filter: true, resizable: true },
+    { headerName: 'garantie', field: 'garantie', sortable: true, filter: true, resizable: true },
+    { headerName: 'experience fournisseur', field: 'experiencefournisseur', sortable: true, filter: true, resizable: true },
+    { headerName: 'nombre de projets similaires', field: 'nombredeprojetssimilaires', sortable: true, filter: true, resizable: true },
+    { headerName: 'notation interne', field: 'notationinterne', sortable: true, filter: true, resizable: true },
+    { headerName: 'chiffre affaire', field: 'chiffreaffaire', sortable: true, filter: true, resizable: true },
+    { headerName: 'situation fiscale', field: 'situationfiscale', sortable: true, filter: true, resizable: true },
+    { headerName: 'fournisseur blacklist', field: 'fournisseurblacklist', sortable: true, filter: true, resizable: true },
+    { headerName: 'type fournisseur', field: 'typefournisseur', sortable: true, filter: true, resizable: true },
+    { headerName: 'fournisseur Etranger Installation Permanente', field: 'fournisseurEtrangerInstallationPermanente', sortable: true, filter: true, resizable: true, valueFormatter: (params) => params.value ? 'Oui' : 'Non' },
+    { headerName: 'Origine Pays Non Double Imposition', field: 'originePaysNonDoubleImposition', sortable: true, filter: true, resizable: true, valueFormatter: (params) => params.value ? 'Oui' : 'Non' },
+
     {
       headerName: 'Fichiers',
       field: 'fileDetails',
@@ -182,8 +181,17 @@ export class AttributionComponent implements OnInit, AfterViewInit {
       return {
         nomFournisseur: details?.nomFournisseur ?? 'N/A',
         montantContrat: details?.montantContrat ?? 'N/A',
-        dureeContratAttribution: details?.dureeContrat ?? 'N/A',
-        fournisseurEtranger: details?.fournisseurEtranger ?? false,
+        dureeContrat: details?.dureeContrat ?? 'N/A',
+        delaiRealisation: details?.delaiRealisation ?? 'N/A',
+        typologidemarche: details?.typologidemarche?? 'N/A',
+        garantie: details?.garantie?? 'N/A',
+        experiencefournisseur: details?.experiencefournisseur ?? 'N/A',
+        nombredeprojetssimilaires: details?.nombredeprojetssimilaires?? 'N/A',
+        notationinterne: details?.notationinterne?? 'N/A',
+        chiffreaffaire: details?.chiffreaffaire?? 'N/A',
+        situationfiscale: details?.situationfiscale?? 'N/A',
+        fournisseurblacklist: details?.fournisseurblacklist?? 'N/A',
+        typefournisseur: details?.typefournisseur?? 'N/A',
         fournisseurEtrangerInstallationPermanente: details?.fournisseurEtrangerInstallationPermanente ?? false,
         originePaysNonDoubleImposition: details?.originePaysNonDoubleImposition ?? false,
       };

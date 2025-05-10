@@ -38,7 +38,6 @@ export class LancementComponent implements OnInit, AfterViewInit {
   columnDefs: ColDef[] = [
     { headerName: 'Numéro Dossier', field: 'numeroDossier', sortable: true, filter: true, resizable: true },
     { headerName: 'Intitulé', field: 'intitule', sortable: true, filter: true, resizable: true },
-    { headerName: 'Type Passation', field: 'typePassation', sortable: true, filter: true, resizable: true },
     { headerName: "État", field: "etat", sortable: true, filter: true,
 
       cellStyle: (params) => this.getEtatTextColorStyle(params)
@@ -48,9 +47,9 @@ export class LancementComponent implements OnInit, AfterViewInit {
     { headerName: 'Chargé', field: 'chargeDossier', sortable: true, filter: true, resizable: true },
     { headerName: 'Montant Estimé', field: 'montantEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Budget Estimé', field: 'budgetEstime', sortable: true, filter: true, resizable: true },
-    { headerName: 'Durée Contrat', field: 'dureeContrat', sortable: true, filter: true, resizable: true },
-    { headerName: 'Durée Réalisation', field: 'dureeRealisation', sortable: true, filter: true, resizable: true },
-    // Ajoutez ici d'autres colonnes spécifiques si nécessaire
+    { headerName: 'Delai Realisation', field: 'delaiRealisation', sortable: true, filter: true, resizable: true },
+    { headerName: 'Typologie de marche', field: 'typologidemarche', sortable: true, filter: true, resizable: true },
+    { headerName: 'Garantie', field: 'garantie', sortable: true, filter: true, resizable: true },
     {
       headerName: 'Fichiers',
       field: 'fileDetails',
@@ -161,8 +160,9 @@ export class LancementComponent implements OnInit, AfterViewInit {
       return {
         montantEstime: details?.montantEstime ?? 'N/A',
         budgetEstime: details?.budgetEstime ?? 'N/A',
-        dureeContrat: details?.dureeContrat ?? 'N/A',
-        dureeRealisation: details?.dureeRealisation ?? 'N/A',
+        garantie: details?.garantie ?? 'N/A',
+        delaiRealisation: details?.delaiRealisation ?? 'N/A',
+        typologidemarche: details?.typologidemarche ?? 'N/A' ,
       };
     }
     return {};

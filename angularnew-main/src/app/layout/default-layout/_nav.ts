@@ -1,21 +1,22 @@
-
 import { INavData } from '@coreui/angular';
 import { StorageService } from '../../service/storage-service/storage.service';
 
 export function getNavItems(storageService: StorageService): INavData[] {
-  const permissions = storageService.getPermissions(); // Récupère les permissions de l'utilisateur
+  const permissions = storageService.getPermissions();
+  const navItems: INavData[] = []; // ✅ Déclaration unique
 
-  const navItems: INavData[] = [
-    {
-      name: 'Accueil',
-      url: '/dashboard',
-      iconComponent: { name: 'cil-speedometer' },
-    },
-    {
-      title: true,
-      name: 'Menu'
-    }
-  ];
+  // Accueil
+  navItems.push({
+    name: 'Accueil',
+    url: '/dashboard',
+    iconComponent: { name: 'cil-speedometer' },
+  });
+
+  // Titre du menu
+  navItems.push({
+    title: true,
+    name: 'Menu'
+  });
 
   // Gestion des utilisateurs
   if (permissions.includes('GETALLUSER') || permissions.includes('AJOUTERUSER')) {
@@ -34,14 +35,17 @@ export function getNavItems(storageService: StorageService): INavData[] {
       });
     }
 
-
     if (userMenu.children!.length > 0) {
       navItems.push(userMenu);
     }
   }
 
-  // Gestion des rôles
-  if (permissions.includes('GETALLROLE') || permissions.includes('AJOUTERROLE') || permissions.includes('MODIFERROLE')) {
+  // Rôles
+  if (
+    permissions.includes('GETALLROLE') ||
+    permissions.includes('AJOUTERROLE') ||
+    permissions.includes('MODIFERROLE')
+  ) {
     const roleMenu: INavData = {
       name: 'Rôles',
       url: '/roles',
@@ -57,18 +61,14 @@ export function getNavItems(storageService: StorageService): INavData[] {
       });
     }
 
-
     if (roleMenu.children!.length > 0) {
       navItems.push(roleMenu);
     }
   }
 
-
-
-
-  // Gestion des rôles
-  if (permissions.includes('SENDEMAIL') ) {
-    const roleMenu: INavData = {
+  // E-mails
+  if (permissions.includes('SENDEMAIL') || permissions.includes('SEEEMAIL')) {
+    const emailMenu: INavData = {
       name: 'E-mails',
       url: '/mails',
       iconComponent: { name: 'cil-envelope-open' },
@@ -76,44 +76,39 @@ export function getNavItems(storageService: StorageService): INavData[] {
     };
 
     if (permissions.includes('SENDEMAIL')) {
-      roleMenu.children!.push({
+      emailMenu.children!.push({
         name: 'Envoyer un e-mail',
         url: '/mails/send',
         icon: 'nav-icon-bullet'
       });
     }
-    if (permissions.includes('SEEEMAIL')) {
-      roleMenu.children!.push({
-        name: 'Voirs les emails ',
-        url: '/mails/all',
-        icon: 'nav-icon-bullet'
-      });
-    }
-    if (permissions.includes('SEEEMAIL')) {
-      roleMenu.children!.push({
-        name: 'Voirs les emails Envoyes ',
-        url: '/mails/sent',
-        icon: 'nav-icon-bullet'
-      });
-    }
 
     if (permissions.includes('SEEEMAIL')) {
-      roleMenu.children!.push({
-        name: 'Boite de reception ',
-        url: '/mails/received',
-        icon: 'nav-icon-bullet'
-      });
+      emailMenu.children!.push(
+        {
+          name: 'Voir les e-mails',
+          url: '/mails/all',
+          icon: 'nav-icon-bullet'
+        },
+        {
+          name: 'E-mails envoyés',
+          url: '/mails/sent',
+          icon: 'nav-icon-bullet'
+        },
+        {
+          name: 'Boîte de réception',
+          url: '/mails/received',
+          icon: 'nav-icon-bullet'
+        }
+      );
     }
 
-
-
-    if (roleMenu.children!.length > 0) {
-      navItems.push(roleMenu);
+    if (emailMenu.children!.length > 0) {
+      navItems.push(emailMenu);
     }
   }
 
-
-// Gestion des dossier
+  // Dossiers CME
   if (permissions.includes('GETALLDOSSIER') || permissions.includes('AJOUTERDOSSIER')) {
     const dossierMenu: INavData = {
       name: 'Dossier CME',
@@ -121,125 +116,72 @@ export function getNavItems(storageService: StorageService): INavData[] {
       iconComponent: { name: 'cil-description' },
       children: [],
     };
+
     if (permissions.includes('AJOUTERDOSSIER')) {
       dossierMenu.children!.push({
         name: 'Ajouter un dossier',
         url: '/dossier/ajouter-dossier',
         icon: 'nav-icon-bullet'
       });
-      if (permissions.includes('GETDOSSIERBYUSER')) {
-        const gestionDossiers: INavData = {
-          name: 'Gestion des Dossiers',
-          url: '/dossier',
-          icon: 'nav-icon-folder',
-          children: []
-        };
-
-        if (permissions.includes('GETDOSSIERBYUSER')) {
-          gestionDossiers.children!.push({
-            name: 'Attribution',
-            url: '/dossier/dossier Attribution',
-            icon: 'nav-icon-bullet'
-          });
-        }
-
-        if (permissions.includes('GETDOSSIERBYUSER')) {
-          gestionDossiers.children!.push({
-            name: 'LANCEMENT',
-            url: '/dossier/dossier Lancement',
-            icon: 'nav-icon-bullet'
-          });
-        }
-
-        if (permissions.includes('GETDOSSIERBYUSER')) {
-          gestionDossiers.children!.push({
-            name: 'AVENANT',
-            url: '/dossier/dossier Avenant',
-            icon: 'nav-icon-bullet'
-          });
-        }
-
-        if (permissions.includes('GETDOSSIERBYUSER')) {
-          gestionDossiers.children!.push({
-            name: 'Gre à Gre',
-            url: '/dossier/dossier Gre a Gre',
-            icon: 'nav-icon-bullet'
-          });
-        }
-
-        if (permissions.includes('GETDOSSIERBYUSER')) {
-          gestionDossiers.children!.push({
-            name: 'RECOURS',
-            url: '/dossier/dossier Recours',
-            icon: 'nav-icon-bullet'
-          });
-        }
-
-        // On ajoute le sous-menu complet au menu principal "Dossier CME"
-        dossierMenu.children!.push(gestionDossiers);
-      }
-
     }
 
+    if (permissions.includes('GETDOSSIERBYUSER')) {
+      const sousTypes: INavData[] = [
+        { name: 'Attribution', url: '/dossier/dossier Attribution', icon: 'nav-icon-bullet' },
+        { name: 'Lancement', url: '/dossier/dossier Lancement', icon: 'nav-icon-bullet' },
+        { name: 'Avenant', url: '/dossier/dossier Avenant', icon: 'nav-icon-bullet' },
+        { name: 'Gre à Gre', url: '/dossier/dossier Gre a Gre', icon: 'nav-icon-bullet' },
+        { name: 'Recours', url: '/dossier/dossier Recours', icon: 'nav-icon-bullet' }
+      ];
 
-      if (permissions.includes('GETALLDOSSIER')) {
-      const gestionDossiers: INavData = {
+      dossierMenu.children!.push({
         name: 'Gestion des Dossiers',
-        url: '/dossier/dossier', // Peut être vide ou générique
+        url: '/dossier',
         icon: 'nav-icon-folder',
-        children: [
-        ]
-      };
-
-      dossierMenu.children!.push(gestionDossiers);
+        children: sousTypes
+      });
     }
 
+    if (permissions.includes('GETALLDOSSIER')) {
+      dossierMenu.children!.push({
+        name: 'Tous les dossiers',
+        url: '/dossier/dossier',
+        icon: 'nav-icon-folder'
+      });
+    }
 
+    navItems.push(dossierMenu);
+  }
 
-    if (dossierMenu.children!.length > 0) {
-      navItems.push(dossierMenu);
+  // Blacklist
+  if (permissions.includes('GETALL') || permissions.includes('AJOUTERBLACK')) {
+    const blacklistMenu: INavData = {
+      name: 'Blacklist',
+      url: '/blacklist',
+      iconComponent: { name: 'cil-description' },
+      children: [],
+    };
+
+    if (permissions.includes('GETALL')) {
+      blacklistMenu.children!.push({
+        name: 'Gestion des blacklist',
+        url: '/blacklist/voirblacklist',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (permissions.includes('AJOUTERBLACK')) {
+      blacklistMenu.children!.push({
+        name: 'Ajouter une blacklist',
+        url: '/blacklist/ajouterblacklist',
+        icon: 'nav-icon-bullet'
+      });
+    }
+
+    if (blacklistMenu.children!.length > 0) {
+      navItems.push(blacklistMenu);
     }
   }
-
-
-  const roleMenu: INavData = {
-    name: 'Dossier',
-    url: '/dossiers/create',
-    iconComponent: { name: 'cil-people' },
-    children: [],
-  };
-
-
-// Gestion des blacklist
-if (permissions.includes('GETALL') || permissions.includes('AJOUTERBLACK')) {
-  const blacklistMenu: INavData = {
-    name: 'blacklist',
-    url: '/blacklist',
-    iconComponent: { name: 'cil-description' },
-    children: [],
-  };
-
-  if (permissions.includes('GETALL')) {
-    blacklistMenu.children!.push({
-      name: 'Gestion des blacklist',
-      url: 'blacklist/voirblacklist',
-      icon: 'nav-icon-bullet'
-    });
-  }
-
-  if (permissions.includes('AJOUTERBLACK')) {
-    blacklistMenu.children!.push({
-      name: 'Ajouter un blacklist',
-      url: 'blacklist/ajouterblacklist',
-      icon: 'nav-icon-bullet'
-    });
-  }
-
-
-  if (blacklistMenu.children!.length > 0) {
-    navItems.push(blacklistMenu);
-  }
-}
 
   return navItems;
 }

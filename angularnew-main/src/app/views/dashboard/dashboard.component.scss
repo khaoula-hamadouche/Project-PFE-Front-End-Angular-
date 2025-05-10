@@ -1,7 +1,73 @@
-:host {
-  .legend {
-    small {
-      font-size: x-small;
-    }
-  }
+.dashboard-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.dashboard-header h2 {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.dashboard-header p {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.chart-section,
+.analysis-section {
+  flex: 1 1 300px; /* Grow, shrink, and base width */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.chart-section h3,
+.analysis-section h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.chart-legend {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.chart-legend li {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.loading-indicator {
+  text-align: center;
+  color: #777;
+  padding: 20px;
 }

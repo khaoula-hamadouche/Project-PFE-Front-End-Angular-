@@ -47,7 +47,7 @@ export class GreAGreTypeComponent implements OnInit, AfterViewInit {
     { headerName: 'Montant Estimé', field: 'montantEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Budget Estimé', field: 'budgetEstime', sortable: true, filter: true, resizable: true },
     { headerName: 'Durée Contrat', field: 'dureeContrat', sortable: true, filter: true, resizable: true },
-    { headerName: 'Durée Réalisation', field: 'dureeRealisation', sortable: true, filter: true, resizable: true },
+    { headerName: 'Delai Réalisation', field: 'delaiRealisation', sortable: true, filter: true, resizable: true },
     { headerName: 'Chargé', field: 'chargeDossier', sortable: true, filter: true, resizable: true },
     {
       headerName: "Date Soumission",
@@ -178,7 +178,7 @@ getEtatTextColorStyle(params: any): any {
           montantEstime: dossier.details?.montantEstime ?? 'N/A',
           budgetEstime: dossier.details?.budgetEstime ?? 'N/A',
           dureeContrat: dossier.details?.dureeContrat ?? 'N/A',
-          dureeRealisation: dossier.details?.dureeRealisation ?? 'N/A',
+          delaiRealisation: dossier.details?.delaiRealisation ?? 'N/A',
         }));
         console.log("✅ rowData GRE_A_GRE après mapping :", this.rowData);
         this.loading = false;
@@ -232,7 +232,7 @@ getEtatTextColorStyle(params: any): any {
       (dossier.montantEstime && dossier.montantEstime.toString().toLowerCase().includes(query)) ||
       (dossier.budgetEstime && dossier.budgetEstime.toString().toLowerCase().includes(query)) ||
       (dossier.dureeContrat && dossier.dureeContrat.toString().toLowerCase().includes(query)) ||
-      (dossier.dureeRealisation && dossier.dureeRealisation.toString().toLowerCase().includes(query)) ||
+      (dossier.delaiRealisation&& dossier.delaiRealisation.toString().toLowerCase().includes(query)) ||
       (dossier.chargeDossier && dossier.chargeDossier.toLowerCase().includes(query))
     );
   }

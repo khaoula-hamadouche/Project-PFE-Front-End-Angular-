@@ -1,0 +1,122 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2 *ngIf="canViewDossierStats && canViewUserRoles && canViewUserDossiersStats">Statistiques des Dossiers, Utilisateurs et Mes Dossiers</h2>
+    <h2 *ngIf="canViewDossierStats && canViewUserRoles && !canViewUserDossiersStats">Statistiques des Dossiers et Utilisateurs</h2>
+    <h2 *ngIf="canViewDossierStats && !canViewUserRoles && canViewUserDossiersStats">Statistiques des Dossiers (Globaux et Personnels)</h2>
+    <h2 *ngIf="canViewDossierStats && !canViewUserRoles && !canViewUserDossiersStats">Statistiques des Dossiers</h2>
+    <h2 *ngIf="!canViewDossierStats && canViewUserRoles && canViewUserDossiersStats">Statistiques des Utilisateurs et Mes Dossiers</h2>
+    <h2 *ngIf="!canViewDossierStats && canViewUserRoles && !canViewUserDossiersStats">Statistiques des Utilisateurs par Rôle</h2>
+    <h2 *ngIf="!canViewDossierStats && !canViewUserRoles && canViewUserDossiersStats">Statistiques de Mes Dossiers</h2>
+    <h2 *ngIf="!canViewDossierStats && !canViewUserRoles && !canViewUserDossiersStats">Tableau de Bord</h2>
+
+    <p *ngIf="canViewDossierStats && canViewUserRoles && canViewUserDossiersStats">Aperçu de l'état actuel des dossiers (globaux et personnels) et de la répartition des utilisateurs par rôle.</p>
+    <p *ngIf="canViewDossierStats && canViewUserRoles && !canViewUserDossiersStats">Aperçu de l'état actuel des dossiers et de la répartition des utilisateurs par rôle.</p>
+    <p *ngIf="canViewDossierStats && !canViewUserRoles && canViewUserDossiersStats">Aperçu de l'état des dossiers (globaux et personnels).</p>
+    <p *ngIf="canViewDossierStats && !canViewUserRoles && !canViewUserDossiersStats">Aperçu de l'état actuel des dossiers.</p>
+    <p *ngIf="!canViewDossierStats && canViewUserRoles && canViewUserDossiersStats">Aperçu de la répartition des utilisateurs et de l'état de mes dossiers.</p>
+    <p *ngIf="!canViewDossierStats && canViewUserRoles && !canViewUserDossiersStats">Aperçu de la répartition des utilisateurs par rôle.</p>
+    <p *ngIf="!canViewDossierStats && !canViewUserRoles && canViewUserDossiersStats">Aperçu de l'état de mes dossiers.</p>
+    <p *ngIf="!canViewDossierStats && !canViewUserRoles && !canViewUserDossiersStats">Bienvenue sur votre tableau de bord personnalisé.</p>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="chart-section" *ngIf="canViewDossierStats">
+      <h3>Répartition des États des Dossiers</h3>
+      <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+        <canvas *ngIf="data.datasets && data.datasets[0] && data.datasets[0].data && data.datasets[0].data.length > 0" #chartComponentDossiers baseChart
+                [data]="data"
+                [type]="'doughnut'"
+                [options]="chartOptions">
+        </canvas>
+        <div *ngIf="!(data.datasets && data.datasets[0] && data.datasets[0].data && data.datasets[0].data.length > 0)" class="loading-indicator">
+          Chargement des données du graphique...
+        </div>
+      </div>
+      <ul class="chart-legend">
+        <li *ngFor="let label of data.labels; let i = index">
+          <span class="legend-color"
+                [style.background-color]="data.datasets && data.datasets[0] && data.datasets[0].backgroundColor && data.datasets[0].backgroundColor[i]">
+          </span>
+          {{ label }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="analysis-section" *ngIf="canViewDossierStats">
+      <h3>Analyse Rapide des Dossiers</h3>
+      <div *ngIf="totalDossiers > 0">
+        <p>Nombre total de dossiers : <strong>{{ totalDossiers }}</strong></p>
+        <p>Pourcentage de dossiers validés : <strong>{{ pourcentageValide | number:'.2-2' }}%</strong></p>
+        <p>Pourcentage de dossiers rejetés : <strong>{{ pourcentageRejete | number:'.2-2' }}%</strong></p>
+        <p>Pourcentage de dossiers en attente : <strong>{{ pourcentageEnAttente | number:'.2-2' }}%</strong></p>
+        <p>Pourcentage de dossiers en traitement : <strong>{{ pourcentageEnTraitement | number:'.2-2' }}%</strong></p>
+      </div>
+      <div *ngIf="totalDossiers === 0" class="loading-indicator">
+        Chargement de l'analyse...
+      </div>
+    </div>
+
+    <div class="chart-section" *ngIf="canViewUserDossiersStats">
+      <h3>État de Mes Dossiers</h3>
+      <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+        <canvas *ngIf="userDossiersData.datasets && userDossiersData.datasets[0] && userDossiersData.datasets[0].data && userDossiersData.datasets[0].data.length > 0" #chartComponentUserDossiers baseChart
+                [data]="userDossiersData"
+                [type]="'doughnut'"
+                [options]="userDossiersChartOptions">
+        </canvas>
+        <div *ngIf="!(userDossiersData.datasets && userDossiersData.datasets[0] && userDossiersData.datasets[0].data && userDossiersData.datasets[0].data.length > 0)" class="loading-indicator">
+          Chargement des données du graphique...
+        </div>
+      </div>
+      <ul class="chart-legend">
+        <li *ngFor="let label of userDossiersData.labels; let i = index">
+          <span class="legend-color"
+                [style.background-color]="userDossiersData.datasets && userDossiersData.datasets[0] && userDossiersData.datasets[0].backgroundColor && userDossiersData.datasets[0].backgroundColor[i]">
+          </span>
+          {{ label }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="analysis-section" *ngIf="canViewUserDossiersStats">
+      <h3>Analyse de Mes Dossiers</h3>
+      <div *ngIf="totalUserDossiers > 0">
+        <p>Nombre total de mes dossiers : <strong>{{ totalUserDossiers }}</strong></p>
+        <p>Pourcentage de mes dossiers validés : <strong>{{ pourcentageUserValide | number:'.2-2' }}%</strong></p>
+        <p>Pourcentage de mes dossiers rejetés : <strong>{{ pourcentageUserRejete | number:'.2-2' }}%</strong></p>
+        <p>Pourcentage de mes dossiers en attente : <strong>{{ pourcentageUserEnAttente | number:'.2-2' }}%</strong></p>
+        <p>Pourcentage de mes dossiers en traitement : <strong>{{ pourcentageUserEnTraitement | number:'.2-2' }}%</strong></p>
+      </div>
+      <div *ngIf="totalUserDossiers === 0" class="loading-indicator">
+        Chargement de l'analyse...
+      </div>
+    </div>
+
+    <div class="chart-section" *ngIf="canViewUserRoles">
+      <h3>Nombre d'utilisateurs par rôle</h3>
+      <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+        <canvas *ngIf="usersByRoleData.datasets && usersByRoleData.datasets[0] && usersByRoleData.datasets[0].data && usersByRoleData.datasets[0].data.length > 0" #chartComponentRoles baseChart
+                [data]="usersByRoleData"
+                [type]="'bar'"
+                [options]="usersByRoleChartOptions">
+        </canvas>
+        <div *ngIf="!(usersByRoleData.datasets && usersByRoleData.datasets[0] && usersByRoleData.datasets[0].data && usersByRoleData.datasets[0].data.length > 0)" class="loading-indicator">
+          Chargement des données du graphique...
+        </div>
+      </div>
+    </div>
+
+    <div class="analysis-section" *ngIf="canViewUserRoles">
+      <h3>Analyse des Utilisateurs par Rôle</h3>
+      <div *ngIf="totalUsers > 0">
+        <p>Nombre total d'utilisateurs : <strong>{{ totalUsers }}</strong></p>
+        <p *ngFor="let role of usersByRoleData.labels">
+          Nombre d'utilisateurs {{ role }} : <strong>{{ usersByRoleCounts[role] }}</strong>
+        </p>
+      </div>
+      <div *ngIf="totalUsers === 0" class="loading-indicator">
+        Chargement de l'analyse...
+      </div>
+    </div>
+  </div>
+</div>
