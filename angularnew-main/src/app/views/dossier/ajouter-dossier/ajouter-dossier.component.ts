@@ -143,7 +143,6 @@ export class AjouterDossierComponent implements OnInit {
   DonneeRequis: { [key: string]: string[] } = {
     APPEL_OFFRE_LANCEMENT: [
       'typologidemarche',
-      'numeroContrat',
       'garantie',
       'montantEstime',
       'budgetEstime',
@@ -176,8 +175,7 @@ export class AjouterDossierComponent implements OnInit {
       'chiffreaffaire',
       'situationfiscale',
       'fournisseurblacklist',
-      'typefournisseur',
-'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition',],
+      'typefournisseur',],
     Consultation_Prestataire_dAttribution: [
       'nomFournisseur',
       'montantContrat',
@@ -191,8 +189,7 @@ export class AjouterDossierComponent implements OnInit {
       'chiffreaffaire',
       'situationfiscale',
       'fournisseurblacklist',
-      'typefournisseur',
-    ' fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition',] ,
+      'typefournisseur',] ,
     Consultation_Procurement_dAttribution: [
       'nomFournisseur',
       'montantContrat',
@@ -206,9 +203,11 @@ export class AjouterDossierComponent implements OnInit {
       'chiffreaffaire',
       'situationfiscale',
       'fournisseurblacklist',
-      'typefournisseur',
-'fournisseurEtrangerInstallationPermanente','originePaysNonDoubleImposition',],
-    GRE_A_GRE: ['montantEstime', 'budgetEstime', 'dureeContrat', 'delaiRealisation', 'garantie'],
+      'typefournisseur',],
+    GRE_A_GRE: ['montantEstime',
+      'budgetEstime',
+      'dureeContrat',
+      'delaiRealisation'],
     AVENANT: [
       'numeroContrat',
       'dateSignatureContrat',
@@ -224,8 +223,7 @@ export class AjouterDossierComponent implements OnInit {
   };
 
   champLabels: { [key: string]: string } = {
-    fournisseurEtrangerInstallationPermanente: "Installation Permanente à l'Étranger",
-    originePaysNonDoubleImposition: 'Origine - Pays sans Double Imposition',
+
     montantEstime: 'Montant Estimé',
     budgetEstime: 'Budget Estimé',
     dureeContrat: 'Durée du Contrat',
@@ -249,11 +247,13 @@ export class AjouterDossierComponent implements OnInit {
     chiffreaffaire: "Chiffre d'Affaires",
   };
 
-  typologidemarcheOptions: string[] = ['Service', 'Fourniture', 'Travaux'];
-  garantieOptions: string[] = ['Aucune', 'Retenue', 'Caution'];
+  typologidemarcheOptions: string[] = ['Services', 'Fournitures', 'Travaux' , 'Etude'];
+  garantieOptions: string[] = ['Aucune', 'Retenu', 'Caution'];
   situationFiscaleOptions: string[] = ['Conforme', 'Non conforme'];
   blacklistOptions: string[] = ['Oui', 'Non'];
   typefournisseurOptions: string[] = ['Local', 'ETRANGER'];
+
+  afficherNomFichier: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -269,7 +269,7 @@ export class AjouterDossierComponent implements OnInit {
       typePassation: ['', Validators.required],
       fichiers: this.fb.array([]),
       nomFichierSuppl: [''],
-      typefournisseur: ['', Validators.required],
+      typefournisseur: [''],
       fournisseurEtrangerInstallationPermanente: [false], // Initialisation
       originePaysNonDoubleImposition: [false], // Initialisation
     });
@@ -335,7 +335,9 @@ export class AjouterDossierComponent implements OnInit {
   isCheckbox(champ: string): boolean {
     return ['fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'].includes(champ);
   }
-
+  afficherChampNomFichier() {
+    this.afficherNomFichier = true;
+  }
   ajouterFichierSupplementaire() {
     const nomFichier = this.dossierForm.get('nomFichierSuppl')?.value;
     if (nomFichier && nomFichier.trim() !== '') {
@@ -345,9 +347,13 @@ export class AjouterDossierComponent implements OnInit {
       // Add a new control to the 'fichiers' FormArray for the new file
       const fichiersArray = this.dossierForm.get('fichiers') as FormArray;
       fichiersArray.push(this.fb.control(null));
+      this.afficherNomFichier = false; // On cache le champ après l'ajout
     } else {
       alert('Veuillez entrer un nom pour le fichier supplémentaire.');
     }
+    const fichiersArray = this.dossierForm.get('fichiers') as FormArray;
+    fichiersArray.push(this.fb.control(null));
+
   }
 
   onFileSelect(event: any, index: number) {
@@ -416,7 +422,7 @@ export class AjouterDossierComponent implements OnInit {
     this.dossierService.ajouterDossier(formData).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.router.navigate(['/dossiers']);
+        this.router.navigate(['/dossier/dossierAttribution']);
       },
       error: (err) => {
         this.isSubmitting = false;
@@ -431,9 +437,9 @@ export class AjouterDossierComponent implements OnInit {
       return '';
     }
     // Appliquer un format à la valeur, par exemple un format simple avec un préfixe
-    const format = '2025/DOS/';
+    const format = '2025/DOSSIER/';
     let numero = value.replace(format, ''); // Supprime le préfixe, si déjà présent
-    numero = numero.padStart(3, '0'); // Ajouter des zéros si nécessaire
+    numero = numero.padStart(1, '0'); // Ajouter des zéros si nécessaire
     return format + numero; // Retourner le format complet
   }
 }

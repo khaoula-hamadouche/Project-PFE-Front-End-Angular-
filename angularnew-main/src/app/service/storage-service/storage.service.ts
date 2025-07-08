@@ -62,4 +62,11 @@ export class StorageService {
     const roles = this.getRoles();
     return roles.length > 0 ? roles[0] : 'USER';
   }
+  // StorageService.ts
+
+  getUserId(): number | null {
+    const user = this.getUser();
+    return user?.userId ?? null;
+  }
+
 }

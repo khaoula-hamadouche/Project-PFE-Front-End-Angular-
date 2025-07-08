@@ -113,6 +113,7 @@ export const routes: Routes = [
       title: 'Reset password'
     }
   },
+
   {
     path: 'verify',
     loadComponent: () => import('./views/pages//verify-otp/verify-otp.component').then(m => m.VerifyOtpComponent),

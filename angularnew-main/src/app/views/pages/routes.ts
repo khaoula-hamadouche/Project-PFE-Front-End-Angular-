@@ -62,5 +62,12 @@ export const routes: Routes = [
       title: 'Verify OTP'
     }
   },
+  {
+    path: 'profil',
+    loadComponent: () => import('../base/profil/profil.component').then(m => m.ProfilComponent),
+    data: {
+      title: 'profil'
+    }
+  },
 
 ];

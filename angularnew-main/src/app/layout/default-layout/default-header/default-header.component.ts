@@ -2,6 +2,7 @@ import {DatePipe, NgTemplateOutlet} from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 import {
   AvatarComponent,
@@ -50,7 +51,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
     return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
-  constructor(private authService: JwtService,private emailService: EmailService) {
+  constructor(private authService: JwtService,private emailService: EmailService,private router: Router) {
     super();
   }
 
@@ -81,4 +82,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
      this.authService.logout();
    }
 
+  goToProfil(): void {
+    this.router.navigate(['/base/profil']);
+  }
 }

@@ -1,12 +1,9 @@
 <mat-card class="form-card p-6">
   <mat-horizontal-stepper linear class="stepper">
-    <!-- Étape 1 : Fichiers Requis -->
-    <mat-step [stepControl]="dossierForm.get('typePassation')!" label="Fichiers Requis" class="step">
-      <form [formGroup]="dossierForm" class="form">
-        <div class="form-header text-center mb-6">
-          <h4 class="form-title">Sélection du Mode de Passation</h4>
-        </div>
-
+<!-- step 1-->
+    <mat-step [stepControl]="dossierForm.get('numeroDossier')! && dossierForm.get('intitule')!" label="Informations du Dossier" class="step">
+      <form [formGroup]="dossierForm" class="grid grid-cols-1 gap-6">
+        <h4 class="col-span-full text-2xl font-semibold mb-2">Informations du Dossier</h4>
         <mat-form-field appearance="outline" class="form-field w-full mb-4" style="width: 100%;">
           <mat-label>Type de Passation</mat-label>
           <mat-select formControlName="typePassation" (selectionChange)="onTypePassationChange($event.value)" required>
@@ -15,50 +12,6 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-
-        <div *ngIf="selectedFichiers.length > 0" class="files-section mb-4">
-          <h3 class="section-title">Fichiers Requis</h3>
-          <div *ngFor="let fichier of selectedFichiers; let i = index" class="file-upload mb-2">
-            <label class="file-label">{{ fichier }} :</label>
-            <input type="file" (change)="onFileSelect($event, i)" class="file-input">
-          </div>
-        </div>
-
-        <!-- Afficher la section des fichiers supplémentaires uniquement après la sélection d'un type de passation -->
-        <h4>Ajouter autre fichier</h4>
-        <div *ngIf="dossierForm.get('typePassation')?.value" class="additional-file mb-4">
-          <div class="input-wrapper">
-            <input matInput formControlName="nomFichierSuppl" class="file-input" placeholder="Nom du fichier">
-            <mat-error *ngIf="dossierForm.get('nomFichierSuppl')?.invalid && dossierForm.get('nomFichierSuppl')?.touched">
-              Le nom du fichier est requis.
-            </mat-error>
-          </div>
-          <button mat-raised-button color="primary" (click)="ajouterFichierSupplementaire()" class="add-file-btn">
-            Ajouter un fichier
-          </button>
-        </div>
-
-
-        <div *ngIf="fichiersSupplementaires.length > 0" class="additional-files mb-4">
-          <h3 class="section-title">Fichiers Supplémentaires</h3>
-          <div *ngFor="let fichierSuppl of fichiersSupplementaires; let i = index" class="file-upload mb-2">
-            <label class="file-label">{{ fichierSuppl.nom }} :</label>
-            <input type="file" (change)="onFileSelect($event, selectedFichiers.length + i)" class="file-input">
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button mat-raised-button matStepperNext class="btn-next">Suivant</button>
-        </div>
-
-      </form>
-
-
-
-    </mat-step>
-    <mat-step [stepControl]="dossierForm.get('numeroDossier')! && dossierForm.get('intitule')!" label="Informations du Dossier" class="step">
-      <form [formGroup]="dossierForm" class="grid grid-cols-1 gap-6">
-        <h4 class="col-span-full text-2xl font-semibold mb-2">Informations du Dossier</h4>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Numéro de Dossier</mat-label>
@@ -70,7 +23,7 @@
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Intitulé</mat-label>
-          <textarea matInput formControlName="intitule" required placeholder="Ex : Fourniture de matériel informatique"> </textarea>
+          <textarea matInput formControlName="intitule" required placeholder="Ex : Fournitures de matériel informatique"> </textarea>
           <mat-error *ngIf="dossierForm.get('intitule')?.hasError('required')">
             L’intitulé est requis.
           </mat-error>
@@ -144,7 +97,7 @@
             <input type="checkbox" formControlName="fournisseurEtrangerInstallationPermanente" />
             Fournisseur étranger avec installation permanente
           </label>
-
+<br>
           <label>
             <input type="checkbox" formControlName="originePaysNonDoubleImposition" />
             Origine du pays avec une commission de non-double imposition
@@ -152,9 +105,7 @@
         </div>
 
         <div class="navigation-buttons">
-          <button mat-stroked-button matStepperPrevious class="btn-previous">
-            Précédent
-          </button>
+
 
           <button mat-raised-button matStepperNext [disabled]="dossierForm.invalid" class="btn-next">
             Suivant
@@ -162,6 +113,66 @@
         </div>
       </form>
     </mat-step>
+    <!-- step 2-->
+    <!-- Étape 1 : Fichiers Requis -->
+
+
+
+    <mat-step [stepControl]="dossierForm.get('typePassation')!" label="Fichiers Requis" class="step">
+      <form [formGroup]="dossierForm" class="form">
+        <div class="form-header text-center mb-6">
+          <h4 class="form-title">Sélection du Mode de Passation</h4>
+        </div>
+
+
+
+        <div *ngIf="selectedFichiers.length > 0" class="files-section mb-4">
+          <h3 class="section-title">Fichiers Requis</h3>
+          <div *ngFor="let fichier of selectedFichiers; let i = index" class="file-upload mb-2">
+            <label class="file-label">{{ fichier }} :</label>
+            <input type="file" (change)="onFileSelect($event, i)" class="file-input">
+          </div>
+        </div>
+
+        <!-- Afficher la section des fichiers supplémentaires uniquement après la sélection d'un type de passation -->
+        <h4>Ajouter autre fichier</h4>
+        <button mat-raised-button color="primary" (click)="afficherChampNomFichier()" class="add-file-btn mb-4" *ngIf="!afficherNomFichier">
+          Ajouter un fichier supplémentaire
+        </button>
+
+        <div *ngIf="afficherNomFichier" class="additional-file mb-4">
+          <div class="input-wrapper">
+            <input matInput formControlName="nomFichierSuppl" class="file-input" placeholder="Nom du fichier">
+            <mat-error *ngIf="dossierForm.get('nomFichierSuppl')?.invalid && dossierForm.get('nomFichierSuppl')?.touched">
+              Le nom du fichier est requis.
+            </mat-error>
+          </div>
+          <button mat-raised-button color="primary" (click)="ajouterFichierSupplementaire()" class="add-file-btn">
+            Ajouter
+          </button>
+        </div>
+
+        <div *ngIf="fichiersSupplementaires.length > 0" class="additional-files mb-4">
+          <h3 class="section-title">Fichiers Supplémentaires</h3>
+          <div *ngFor="let fichierSuppl of fichiersSupplementaires; let i = index" class="file-upload mb-2">
+            <label class="file-label">{{ fichierSuppl.nom }} :</label>
+            <input type="file" (change)="onFileSelect($event, selectedFichiers.length + i)" class="file-input">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button mat-stroked-button matStepperPrevious class="btn-previous">
+            Précédent
+          </button>
+          <button mat-raised-button matStepperNext class="btn-next">Suivant</button>
+        </div>
+
+      </form>
+
+
+
+    </mat-step>
+
+
     <!-- Étape 3 : Confirmation -->
     <mat-step label="Confirmation" class="step">
       <h2 class="confirmation-title">📝 Confirmation du Dossier</h2>

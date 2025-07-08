@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 export interface BlacklistDTO {
   denomination: string;
@@ -9,31 +9,37 @@ export interface BlacklistDTO {
   motifs: string;
   dureeExclusion: number;
 }
-interface Dossier {
+export interface Dossier {
+  id: number;
   numeroDossier: string;
   intitule: string;
-  typePassation: 'APPEL_OFFRE_LANCEMENT' | 'Consultation_Prestataire_de_Lancement' | 'Consultation_Procurement_de_Lancement' |
-    'APPEL_OFFRE_ATTRIBUTION' | 'Consultation_Prestataire_dAttribution' | 'Consultation_Procurement_dAttribution' |
-    'GRE_A_GRE' | 'AVENANT';
-  montantEstime?: number;
-  budgetEstime?: number;
-  dureeContrat?: number;
-  dureeRealisation?: number;
-  nomFournisseur?: string;
-  montantContrat?: number;
-  fournisseurEtranger?: boolean;
-  fournisseurEtrangerInstallationPermanente?: boolean;
-  originePaysNonDoubleImposition?: boolean;
-  numeroContrat?: string;
-  dateExpirationContrat?: string;
-  dateSignatureContrat?: string;
-  objetAvenant?: string;
-  montantAvenant?: number;
-  dureeAvenant?: number;
-  nouveauMontantContrat?: number;
-  nouvelleDureeContrat?: number;
-  // Si tu as d'autres champs spécifiques pour chaque type de dossier, ajoute-les ici
+  etat: string;
+  typePassation: string;
+  dateSoumission: string;
+  chargeDossierName?: string;
+  chargeDossierEmail?: string;
+  chargeDossierId?: string;
+  fileDetails: { [key: string]: string };
+  resultats: Resultat[];
+  decisions: Decision[];
 }
+
+export interface Resultat {
+  id: number;
+  resultat: string;
+  compteRendu: string;
+  dateAjout: string;
+  chargeDossierName?: string;
+  chargeDossierEmail?: string;
+  chargeDossierId?: string;}
+
+export interface Decision {
+  id: number;
+  decision: string;
+  dateAjout: string;
+  chargeDossierName?: string;
+  chargeDossierEmail?: string;
+chargeDossierId?: string;}
 
 @Injectable({
   providedIn: 'root',
@@ -70,6 +76,10 @@ export class DossierService {
   getDossierById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`,{withCredentials: true});
   }
+  getDossierByIdd(id: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8085/api/decisions/dossiers/{{id}}`,{withCredentials: true});
+  }
+
   getDossierByNumeroDossier(numeroDossier: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/byNumeroDossier/${numeroDossier}`, { withCredentials: true });
   }
@@ -79,7 +89,13 @@ export class DossierService {
   getAllDossiers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/`,{withCredentials: true});
   }
+  getAllDossierswithout(): Observable<any[]> {
+    return this.http.get<any[]>(` http://localhost:8085/api/resultats/dossiers-sans-mon-resultat`,{withCredentials: true});
+  }
 
+  getAlllDossiers(): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:8085/api/decisions/dossiers-sans-decision`,{withCredentials: true});
+  }
   addToBlacklist(data: BlacklistDTO): Observable<any> {
     return this.http.post(`${this.listUrl}`, data, { withCredentials: true });
   }
@@ -92,6 +108,71 @@ export class DossierService {
   }
   getStatsParEtat(): Observable<{ [key: string]: number }> {
     return this.http.get<{ [key: string]: number }>('http://localhost:8085/api/dossiers/stats/etat');
+  }
+  ajouterResultatEtCompteRendu(idDossier: number, resultat: string, compteRendu: string) {
+    const params = new HttpParams()
+      .set('resultat', resultat)
+      .set('compteRendu', compteRendu);
+
+    return this.http.post(
+      `http://localhost:8085/api/resultats/dossiers/${idDossier}/resultat`,
+      null,  // pas de body
+      { params: params, withCredentials: true }
+    );
+  }
+
+  getResultatByDossierId(dossierId: number) {
+    return this.http.get<any>(`http://localhost:8085/api/resultats/dossiers/${dossierId}/resultat`, {withCredentials: true });
+  }
+
+  getAllResultatsByDossierId(id: number) {
+    return this.http.get<any[]>(`http://localhost:8085/api/resultats/dossiers/${id}/resultats`, {withCredentials: true });
+  }
+
+  ajouterDecision(idDossier: number, decision: string, compteRendu?: string) {
+    let params = new HttpParams()
+      .set('decision', decision);
+
+    if (compteRendu) {
+      params = params.set('compteRendu', compteRendu);
+    }
+
+    return this.http.post(
+      `http://localhost:8085/api/decisions/dossiers/${idDossier}/ajouter`,
+      null,
+      { params: params, withCredentials: true }
+    );
+  }
+
+  // dossier.service.ts
+  // For now, keep it specific if only 'dateHeureReunion' is truly expected here.
+
+  getVisaRefusDecisions(): Observable<Dossier[]> {
+    return this.http.get<Dossier[]>(`http://localhost:8085/api/decisions/decision/Refus de visa`, { withCredentials: true });
+  }
+  getVisaSansReserveDecisions(): Observable<Dossier[]> {
+    return this.http.get<Dossier[]>(`http://localhost:8085/api/decisions/decision/Visa sans réserve`, { withCredentials: true });
+  }
+  getVisaAvecREserveSuspDecisions(): Observable<Dossier[]> {
+    return this.http.get<Dossier[]>(`http://localhost:8085/api/decisions/decision/Visa avec réserve suspensive`, { withCredentials: true });
+  }
+  getVisaSansREserveSuspDecisions(): Observable<Dossier[]> {
+    return this.http.get<Dossier[]>(`http://localhost:8085/api/decisions/decision/Visa sans réserve sunsponsive`, { withCredentials: true });
+  }
+
+  ajouterRendezVous(id: number, data: { dateHeureReunion: string }): Observable<any> {
+    // No need for HttpParams if sending JSON body
+    // The 'data' object is already the JSON payload you want to send.
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json' // Crucial: Send as JSON
+    });
+
+    return this.http.post(
+      `http://localhost:8085/api/reunions/dossiers/${id}/ajouter`,
+      data, // Send the 'data' object directly as JSON body
+      { headers: headers, withCredentials: true }
+    );
   }
 
 }

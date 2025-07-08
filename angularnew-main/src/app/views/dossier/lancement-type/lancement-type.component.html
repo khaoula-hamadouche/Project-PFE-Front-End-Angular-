@@ -3,9 +3,18 @@
     <c-card class="mb-4 shadow-sm">
       <c-card-body>
 
-        <div class="d-flex justify-content-between mb-3">
-          <h5 class="mb-0">Gestion des dossiers</h5>
-
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h5 class="mb-0">Gestion des dossiers Lancement</h5>
+          <div class="d-flex gap-2">
+            <select class="form-select" [(ngModel)]="selectedType" name="type" (change)="onTypeChange()">
+              <option value="">-- Mode de passation --</option>
+              <option value="dossierGreaGre">Gre a Gre</option>
+              <option value="dossierRecours">Recours</option>
+              <option value="dossierAttribution">Attribution</option>
+              <option value="dossierAvenant">Avenant</option>
+              <option value="dossierLancement">Lancement</option>
+            </select>
+          </div>
         </div>
 
         <!-- Tableau Ag-Grid -->

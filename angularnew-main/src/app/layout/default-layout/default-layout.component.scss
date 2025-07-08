@@ -7,6 +7,13 @@
     --scrollbar-hover-size: calc(var(--scrollbar-size) * 1.5);
   }
 }
+.sidebar-brand-full,
+.sidebar-brand-narrow {
+  display: block;
+  margin: 0 auto; /* Centre l'image */
+  height: 40px; /* Ajuste la taille selon tes besoins */
+}
+
 
 // ng-scrollbar css variables
 //.cui-scrollbar {

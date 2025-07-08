@@ -22,11 +22,16 @@ interface DoughnutChartData extends ChartData<'doughnut'> {
     backgroundColor: string[];
     data: number[];
   })[];
+  labels?: string[]; // Make labels optional for DoughnutChartData as per your usage
 }
 
 interface UserRoleStat {
   role: string;
   count: number;
+}
+
+interface DecisionStatsResponse {
+  [key: string]: number; // Define the structure for decision counts
 }
 
 @Component({
@@ -39,10 +44,10 @@ interface UserRoleStat {
 export class DashboardComponent implements OnInit, OnDestroy {
   // Dossiers Chart Data and Options
   data: DoughnutChartData = {
-    labels: ['VALIDE', 'REJETE', 'EN_ATTENTE', 'EN_TRAITEMENT'],
+    labels: ['TRAITE', 'EN_ATTENTE', 'EN_TRAITEMENT'],
     datasets: [
       {
-        backgroundColor: ['#008000', '#FF0000', '#FFFF00', '#87CEEB'], // Vert, Rouge, Jaune, Bleu Ciel
+        backgroundColor: ['#008000', '#FFFF00', '#87CEEB'], // Vert (TRAITE), Jaune (EN_ATTENTE), Bleu Ciel (EN_TRAITEMENT)
         data: []
       }
     ]
@@ -84,10 +89,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // User-Specific Dossiers Chart Data and Options
   userDossiersData: DoughnutChartData = {
-    labels: ['VALIDE', 'REJETE', 'EN_ATTENTE', 'EN_TRAITEMENT'],
+    labels: ['TRAITE', 'EN_ATTENTE', 'EN_TRAITEMENT'],
     datasets: [
       {
-        backgroundColor: ['#008000', '#FF0000', '#FFFF00', '#87CEEB'], // Vert, Rouge, Jaune, Bleu Ciel
+        backgroundColor: ['#008000', '#FFFF00', '#87CEEB'], // Vert (TRAITE), Jaune (EN_ATTENTE), Bleu Ciel (EN_TRAITEMENT)
         data: []
       }
     ]
@@ -97,39 +102,62 @@ export class DashboardComponent implements OnInit, OnDestroy {
     maintainAspectRatio: false
   };
 
+  // Decision Chart Data and Options
+  decisionData: DoughnutChartData = {
+    labels: [], // Initialize with an empty array for labels
+    datasets: [
+      {
+        backgroundColor: ['#4CAF50', '#FFC107', '#F44336', '#2196F3'], // Green, Amber, Red, Blue
+        data: []
+      }
+    ]
+  };
+  decisionChartOptions: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false
+  };
+
   canViewUserRoles: boolean = false;
   canViewDossierStats: boolean = false;
   canViewUserDossiersStats: boolean = false;
+  canViewDecisionStats: boolean = false; // New permission flag
 
   totalDossiers: number = 0;
-  pourcentageValide: number = 0;
-  pourcentageRejete: number = 0;
+  pourcentageTraite: number = 0;
   pourcentageEnAttente: number = 0;
   pourcentageEnTraitement: number = 0;
   totalUsers: number = 0;
   totalUserDossiers: number = 0;
-  pourcentageUserValide: number = 0;
-  pourcentageUserRejete: number = 0;
+  pourcentageUserTraite: number = 0;
   pourcentageUserEnAttente: number = 0;
   pourcentageUserEnTraitement: number = 0;
+  totalDecisions: number = 0; // New total for decisions
+  decisionCounts: { [decision: string]: number } = {}; // To store individual decision counts
+  pourcentageVisaSansReserve: number = 0;
+  pourcentageVisaAvecReserveSuspensive: number = 0;
+  pourcentageRefusDeVisa: number = 0;
+  pourcentageVisaAvecReserveNonSuspensive: number = 0;
+
   usersByRoleCounts: { [role: string]: number } = {};
   private ngUnsubscribe = new Subject<void>();
 
   @ViewChild('chartComponentDossiers') chartComponentDossiers!: ChartjsComponent;
   @ViewChild('chartComponentRoles') chartComponentRoles!: ChartjsComponent;
   @ViewChild('chartComponentUserDossiers') chartComponentUserDossiers!: ChartjsComponent;
+  @ViewChild('chartComponentDecisions') chartComponentDecisions!: ChartjsComponent; // New ViewChild
 
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
-    private storageService: StorageService // Inject StorageService
+    private storageService: StorageService
   ) {}
 
   ngOnInit(): void {
     const permissions = this.storageService.getPermissions();
     this.canViewUserRoles = permissions.includes('GETALLROLE');
-    this.canViewDossierStats = permissions.includes('GETALLDOSSIER');
-    this.canViewUserDossiersStats = permissions.includes('GETDOSSIERBYUSER'); // Check for the new permission
+    this.canViewDossierStats = permissions.includes('GETALLDOSSIER') || permissions.includes('getresultat') || permissions.includes('GETDOSSIERBYUSER') || permissions.includes('addRDV');
+    // Check for decision stats permission - same as dossier stats for now
+    this.canViewDecisionStats = permissions.includes('GETALLDOSSIER') || permissions.includes('getresultat') || permissions.includes('GETDOSSIERBYUSER');
 
     if (this.canViewDossierStats) {
       this.fetchDossierStats();
@@ -138,7 +166,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.fetchUsersByRoleStats();
     }
     if (this.canViewUserDossiersStats) {
-      this.fetchUserDossierStats(); // Call the new fetch method
+      this.fetchUserDossierStats();
+    }
+    if (this.canViewDecisionStats) { // Fetch decision stats if authorized
+      this.fetchDecisionStats();
     }
   }
 
@@ -152,8 +183,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       (response) => {
         if (response && typeof response === 'object') {
           this.data.datasets[0].data = [
-            response.VALIDE || 0,
-            response.REJETE || 0,
+            response.TRAITE || 0,
             response.EN_ATTENTE || 0,
             response.EN_TRAITEMENT || 0
           ];
@@ -161,13 +191,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.updateDossierChart();
         } else {
           console.error('Réponse des statistiques des dossiers invalide:', response);
-          this.totalDossiers = 0; // S'assurer que l'analyse ne s'affiche pas avec des données invalides
+          this.totalDossiers = 0;
         }
         this.cdr.detectChanges();
       },
       (error) => {
         console.error('Erreur lors de la récupération des statistiques des dossiers', error);
-        this.totalDossiers = 0; // S'assurer que l'analyse ne s'affiche pas en cas d'erreur
+        this.totalDossiers = 0;
         this.cdr.detectChanges();
       }
     );
@@ -194,12 +224,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       (response) => {
         if (response && typeof response === 'object') {
           this.userDossiersData.datasets[0].data = [
-            response.VALIDE || 0,
-            response.REJETE || 0,
+            response.TRAITE || 0,
             response.EN_ATTENTE || 0,
             response.EN_TRAITEMENT || 0
           ];
-          this.calculateUserDossierAnalysis(); // Call the new analysis method
+          this.calculateUserDossierAnalysis();
           this.updateUserDossierChart();
         } else {
           console.error('Réponse des statistiques des dossiers utilisateur invalide:', response);
@@ -215,17 +244,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
   }
 
+  fetchDecisionStats(): void {
+    this.http.get<DecisionStatsResponse>('http://localhost:8085/api/decisions/counts').pipe(takeUntil(this.ngUnsubscribe)).subscribe(
+      (response) => {
+        if (response && typeof response === 'object') {
+          this.decisionData.labels = Object.keys(response);
+          this.decisionData.datasets[0].data = Object.values(response);
+          this.calculateDecisionAnalysis();
+          this.updateDecisionChart();
+        } else {
+          console.error('Réponse des statistiques des décisions invalide:', response);
+          this.totalDecisions = 0;
+        }
+        this.cdr.detectChanges();
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des statistiques des décisions', error);
+        this.totalDecisions = 0;
+        this.cdr.detectChanges();
+      }
+    );
+  }
+
   calculateUserDossierAnalysis(): void {
     const data = this.userDossiersData.datasets[0].data;
     this.totalUserDossiers = data.reduce((sum, value) => sum + value, 0);
     if (this.totalUserDossiers > 0) {
-      this.pourcentageUserValide = (data[0] / this.totalUserDossiers) * 100;
-      this.pourcentageUserRejete = (data[1] / this.totalUserDossiers) * 100;
-      this.pourcentageUserEnAttente = (data[2] / this.totalUserDossiers) * 100;
-      this.pourcentageUserEnTraitement = (data[3] / this.totalUserDossiers) * 100;
+      this.pourcentageUserTraite = (data[0] / this.totalUserDossiers) * 100;
+      this.pourcentageUserEnAttente = (data[1] / this.totalUserDossiers) * 100;
+      this.pourcentageUserEnTraitement = (data[2] / this.totalUserDossiers) * 100;
     } else {
-      this.pourcentageUserValide = 0;
-      this.pourcentageUserRejete = 0;
+      this.pourcentageUserTraite = 0;
       this.pourcentageUserEnAttente = 0;
       this.pourcentageUserEnTraitement = 0;
     }
@@ -243,15 +292,39 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const data = this.data.datasets[0].data;
     this.totalDossiers = data.reduce((sum, value) => sum + value, 0);
     if (this.totalDossiers > 0) {
-      this.pourcentageValide = (data[0] / this.totalDossiers) * 100;
-      this.pourcentageRejete = (data[1] / this.totalDossiers) * 100;
-      this.pourcentageEnAttente = (data[2] / this.totalDossiers) * 100;
-      this.pourcentageEnTraitement = (data[3] / this.totalDossiers) * 100;
+      this.pourcentageTraite = (data[0] / this.totalDossiers) * 100;
+      this.pourcentageEnAttente = (data[1] / this.totalDossiers) * 100;
+      this.pourcentageEnTraitement = (data[2] / this.totalDossiers) * 100;
     } else {
-      this.pourcentageValide = 0;
-      this.pourcentageRejete = 0;
+      this.pourcentageTraite = 0;
       this.pourcentageEnAttente = 0;
       this.pourcentageEnTraitement = 0;
+    }
+  }
+
+  calculateDecisionAnalysis(): void {
+    const data = this.decisionData.datasets[0].data;
+    const labels = this.decisionData.labels; // Labels are guaranteed to be string[] by now
+
+    this.totalDecisions = data.reduce((sum, value) => sum + value, 0);
+
+    this.decisionCounts = {};
+    if (labels) { // Check if labels exist before iterating
+      labels.forEach((label, index) => {
+        this.decisionCounts[label] = data[index];
+      });
+    }
+
+    if (this.totalDecisions > 0) {
+      this.pourcentageVisaSansReserve = (this.decisionCounts['Visa sans réserve'] || 0) / this.totalDecisions * 100;
+      this.pourcentageVisaAvecReserveSuspensive = (this.decisionCounts['Visa avec réserve suspensive'] || 0) / this.totalDecisions * 100;
+      this.pourcentageRefusDeVisa = (this.decisionCounts['Refus de visa'] || 0) / this.totalDecisions * 100;
+      this.pourcentageVisaAvecReserveNonSuspensive = (this.decisionCounts['Visa avec réserve non suspensive'] || 0) / this.totalDecisions * 100;
+    } else {
+      this.pourcentageVisaSansReserve = 0;
+      this.pourcentageVisaAvecReserveSuspensive = 0;
+      this.pourcentageRefusDeVisa = 0;
+      this.pourcentageVisaAvecReserveNonSuspensive = 0;
     }
   }
 
@@ -270,6 +343,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   updateUserDossierChart(): void {
     if (this.chartComponentUserDossiers && this.chartComponentUserDossiers.chart) {
       this.chartComponentUserDossiers.chart.update();
+    }
+  }
+
+  updateDecisionChart(): void {
+    if (this.chartComponentDecisions && this.chartComponentDecisions.chart) {
+      this.chartComponentDecisions.chart.update();
     }
   }
 }

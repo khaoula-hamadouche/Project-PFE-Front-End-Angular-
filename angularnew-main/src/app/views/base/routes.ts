@@ -13,7 +13,7 @@ export const routes: Routes = [
         redirectTo: 'cards',
         pathMatch: 'full'
       },
-     
+
       {
         path: 'users',
         loadComponent: () => import('./users/users.component').then(m => m.usersComponent),
@@ -31,9 +31,16 @@ export const routes: Routes = [
         loadComponent: () => import('./edit-user/edit-user.component').then(m => m.EditUserComponent),
         data: { title: 'editeuser', permissions: ['MODIFIERUSER'] }, // 🔒 Protection édition
         canActivate: [baseGuard]
-      }
-      
-     
+      },
+      {
+        path: 'profil',
+        loadComponent: () => import('./profil/profil.component').then(m => m.ProfilComponent),
+        data: {
+          title: 'profil'
+        }
+      },
+
+
     ]
   }
 ];

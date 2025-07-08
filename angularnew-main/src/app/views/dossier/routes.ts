@@ -61,27 +61,27 @@ export const routes: Routes = [
 
       },
       {
-        path: 'dossier Avenant',
+        path: 'dossierAvenant',
         loadComponent: () => import('./avenant-type/avenant-type.component').then(m => m.AvenantTypeComponent),
 
       },
       {
-        path: 'dossier Attribution',
+        path: 'dossierAttribution',
         loadComponent: () => import('./attribution-type/attribution-type.component').then(m => m.AttributionTypeComponent),
 
       },
       {
-        path: 'dossier Lancement',
+        path: 'dossierLancement',
         loadComponent: () => import('./lancement-type/lancement-type.component').then(m => m.LancementTypeComponent),
 
       },
       {
-        path: 'dossier Gre a Gre',
+        path: 'dossierGreaGre',
         loadComponent: () => import('./gre-a-gre-type/gre-a-gre-type.component').then(m => m.GreAGreTypeComponent),
 
       },
       {
-        path: 'dossier Recours',
+        path: 'dossierRecours',
         loadComponent: () => import('./recours-type/recours-type.component').then(m => m.RecoursTypeComponent),
 
       },
@@ -94,7 +94,50 @@ export const routes: Routes = [
         path: 'traitement/:id',
         loadComponent: () => import('./traitement/traitement.component').then(m => m.TraitementComponent),
 
-      }
+      },
+      {
+        path: 'resultat/:id',
+        loadComponent: () => import('./resultat/resultat.component').then(m => m.ResultatComponent),
+
+      },
+      {
+        path: 'refus',
+        loadComponent: () => import('./refus/refus.component').then(m => m.RefusComponent),
+
+      },
+      {
+        path: 'sans-reserve',
+        loadComponent: () => import('./sans-reserve/sans-reserve.component').then(m => m.SansReserveComponent),
+
+      }, {
+        path: 'sans-reserve-susp',
+        loadComponent: () => import('./sans-reserve-susp/sans-reserve-susp.component').then(m => m.SansReserveSuspComponent),
+
+      }, {
+        path: 'avec-reserve-susp',
+        loadComponent: () => import('./avec-reserve-susp/avec-reserve-susp.component').then(m => m.AvecReserveSuspComponent),
+
+      }, {
+        path: 'verifier',
+        loadComponent: () => import('./verifier/verifier.component').then(m => m.VerifierComponent),
+
+      },
+      {
+        path: 'dossiers',
+        loadComponent: () => import('./dossiers/dossiers.component').then(m => m.DossiersComponent),
+
+      },
+      {
+        path: 'reunion/:id',
+        loadComponent: () => import('./reunion/reunion.component').then(m => m.ReunionComponent),
+
+      },
+      {
+        path: 'DossierDetails/:id',
+        loadComponent: () => import('./Dossier-details/Dossier-details.component').then(m => m.DossierDetailsComponent),
+
+      },
+
 
     ]
   }

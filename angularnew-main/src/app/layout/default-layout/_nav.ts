@@ -17,6 +17,25 @@ export function getNavItems(storageService: StorageService): INavData[] {
     title: true,
     name: 'Menu'
   });
+  if (permissions.includes('getresultat')) {
+    const analyseMenu: INavData = {
+      name: 'Dossier CME ',
+      url: '/dossier/verifier',
+      iconComponent: { name: 'cil-description' },
+      children: [],};
+
+      navItems.push(analyseMenu);
+    }
+  if (permissions.includes('getresultat')) {
+    const analyseMenu: INavData = {
+      name: 'Dossiers Traitees',
+      url: '/dossier/sans-reserve',
+      iconComponent: { name: 'cil-description' },
+      children: [],};
+
+    navItems.push(analyseMenu);
+  }
+
 
   // Gestion des utilisateurs
   if (permissions.includes('GETALLUSER') || permissions.includes('AJOUTERUSER')) {
@@ -66,50 +85,8 @@ export function getNavItems(storageService: StorageService): INavData[] {
     }
   }
 
-  // E-mails
-  if (permissions.includes('SENDEMAIL') || permissions.includes('SEEEMAIL')) {
-    const emailMenu: INavData = {
-      name: 'E-mails',
-      url: '/mails',
-      iconComponent: { name: 'cil-envelope-open' },
-      children: [],
-    };
-
-    if (permissions.includes('SENDEMAIL')) {
-      emailMenu.children!.push({
-        name: 'Envoyer un e-mail',
-        url: '/mails/send',
-        icon: 'nav-icon-bullet'
-      });
-    }
-
-    if (permissions.includes('SEEEMAIL')) {
-      emailMenu.children!.push(
-        {
-          name: 'Voir les e-mails',
-          url: '/mails/all',
-          icon: 'nav-icon-bullet'
-        },
-        {
-          name: 'E-mails envoyés',
-          url: '/mails/sent',
-          icon: 'nav-icon-bullet'
-        },
-        {
-          name: 'Boîte de réception',
-          url: '/mails/received',
-          icon: 'nav-icon-bullet'
-        }
-      );
-    }
-
-    if (emailMenu.children!.length > 0) {
-      navItems.push(emailMenu);
-    }
-  }
-
   // Dossiers CME
-  if (permissions.includes('GETALLDOSSIER') || permissions.includes('AJOUTERDOSSIER')) {
+  if (permissions.includes('GETALLDOSSIER') || permissions.includes('AJOUTERDOSSIER') || (permissions.includes('addRDV')|| permissions.includes('GETALLDOSSIER')  )) {
     const dossierMenu: INavData = {
       name: 'Dossier CME',
       url: '/dossier',
@@ -126,30 +103,33 @@ export function getNavItems(storageService: StorageService): INavData[] {
     }
 
     if (permissions.includes('GETDOSSIERBYUSER')) {
-      const sousTypes: INavData[] = [
-        { name: 'Attribution', url: '/dossier/dossier Attribution', icon: 'nav-icon-bullet' },
-        { name: 'Lancement', url: '/dossier/dossier Lancement', icon: 'nav-icon-bullet' },
-        { name: 'Avenant', url: '/dossier/dossier Avenant', icon: 'nav-icon-bullet' },
-        { name: 'Gre à Gre', url: '/dossier/dossier Gre a Gre', icon: 'nav-icon-bullet' },
-        { name: 'Recours', url: '/dossier/dossier Recours', icon: 'nav-icon-bullet' }
-      ];
-
+        dossierMenu.children!.push({
+          name: 'Voir les dossiers',
+          url: '/dossier/dossierAttribution',
+          icon: 'nav-icon-bullet'
+        });
+    }
+    if (permissions.includes('addRDV')) {
       dossierMenu.children!.push({
-        name: 'Gestion des Dossiers',
-        url: '/dossier',
-        icon: 'nav-icon-folder',
-        children: sousTypes
+        name: 'Voir dossiers',
+        url: '/dossier/dossiers',
+        icon: 'nav-icon-folder'
       });
     }
-
     if (permissions.includes('GETALLDOSSIER')) {
       dossierMenu.children!.push({
-        name: 'Tous les dossiers',
+        name: 'Dossiers Non Traitees',
         url: '/dossier/dossier',
         icon: 'nav-icon-folder'
       });
     }
-
+    if (permissions.includes('GETALLDOSSIER')|| permissions.includes('GETALLDOSSIER')) {
+      dossierMenu.children!.push({
+        name: 'Dossiers Traitees',
+        url: '/dossier/sans-reserve',
+        icon: 'nav-icon-folder'
+      });
+     }
     navItems.push(dossierMenu);
   }
 
@@ -162,10 +142,17 @@ export function getNavItems(storageService: StorageService): INavData[] {
       children: [],
     };
 
-    if (permissions.includes('GETALL')) {
+    if (permissions.includes('GETALL') ) {
       blacklistMenu.children!.push({
         name: 'Gestion des blacklist',
         url: '/blacklist/voirblacklist',
+        icon: 'nav-icon-bullet'
+      });
+    }
+    if (permissions.includes('GETALL')&& !permissions.includes('AJOUTERBLACK')) {
+      blacklistMenu.children!.push({
+        name: 'Verification',
+        url: '/dossier/Attribution',
         icon: 'nav-icon-bullet'
       });
     }
@@ -182,6 +169,15 @@ export function getNavItems(storageService: StorageService): INavData[] {
       navItems.push(blacklistMenu);
     }
   }
-
+  if (permissions.includes('GETALLDOSSIER')) {
+    const dossierMenu: INavData = {
+      name: 'Archives',
+      url: '/dossier/Attribution',
+      iconComponent: { name: 'cil-description' },
+      children: [], // Le tableau d'enfants est vide, mais le menu parent s'affichera
+    };
+    // Pas de condition sur les enfants, le menu 'Archives' sera toujours ajouté
+    navItems.push(dossierMenu);
+  }
   return navItems;
 }

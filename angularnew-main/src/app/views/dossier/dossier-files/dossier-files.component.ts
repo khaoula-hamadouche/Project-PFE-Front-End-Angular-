@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DossierService } from '../../../service/dossier.service';
 import { CommonModule } from '@angular/common';
@@ -11,10 +11,12 @@ import { IconDirective } from "@coreui/icons-angular";
   templateUrl: './dossier-files.component.html',
   styleUrls: ['./dossier-files.component.scss']
 })
-export class DossierFilesComponent implements OnInit {
+export class DossierFilesComponent implements OnInit, OnChanges { // Implement OnChanges
   dossier: any;
   dossierId!: number;
   dossiers: any[] = [];
+  @Input() dossierDetails: any;
+  @Input() traitement: any;
 
   constructor(
     private dossierService: DossierService,
@@ -68,7 +70,14 @@ export class DossierFilesComponent implements OnInit {
   generateSingleDossierPdf() {
     window.open(`http://localhost:9091/generate-dossier-pdf/${this.dossierId}`, '_blank');
   }
-
+  ngOnChanges(changes: SimpleChanges): void {
+    // This lifecycle hook is important to react to changes in the @Input()
+    if (changes['dossierDetails'] && changes['dossierDetails'].currentValue) {
+      // You might want to do something here when dossierDetails updates
+      // For example, log it or set internal properties based on it
+      // console.log('DossierFilesComponent ngOnChanges - dossierDetails updated:', this.dossierDetails);
+    }
+  }
   openFile(fileIdOrUrl: string) {
     let fileUrl: string;
     // Vérifiez si la valeur ressemble déjà à une URL

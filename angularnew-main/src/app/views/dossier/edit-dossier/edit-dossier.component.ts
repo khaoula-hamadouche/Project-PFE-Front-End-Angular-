@@ -1,6 +1,6 @@
 // edit-dossier.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {
   FormArray,
   FormBuilder,
@@ -44,6 +44,7 @@ interface ExistingFile {
     MatCheckboxModule,
     MatButtonModule,
     MatCardModule,
+    RouterLink,
   ],
 })
 export class EditDossierComponent implements OnInit, OnDestroy {
@@ -71,25 +72,101 @@ export class EditDossierComponent implements OnInit, OnDestroy {
   };
 
   DonneeRequis: { [key: string]: string[] } = {
-    APPEL_OFFRE_LANCEMENT: ['montantEstime', 'budgetEstime', 'dureeContrat', 'dureeRealisation'],
-    Consultation_Prestataire_de_Lancement: ['montantEstime', 'budgetEstime', 'dureeContrat', 'dureeRealisation'],
-    Consultation_Procurement_de_Lancement: ['montantEstime', 'budgetEstime', 'dureeContrat', 'dureeRealisation'],
-    APPEL_OFFRE_ATTRIBUTION: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'],
-    Consultation_Prestataire_dAttribution: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'],
-    Consultation_Procurement_dAttribution: ['nomFournisseur', 'montantContrat', 'dureeContrat', 'fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'],
-    GRE_A_GRE: ['montantEstime', 'budgetEstime', 'dureeContrat', 'dureeRealisation'],
-    AVENANT: ['numeroContrat', 'dateSignatureContrat', 'dureeContrat', 'dateExpirationContrat', 'montantContrat', 'objetAvenant', 'montantAvenant', 'dureeAvenant'],
-    RECOURS: [] // No specific data required for RECOURS in this example
+    APPEL_OFFRE_LANCEMENT: [
+      'typologidemarche',
+      'garantie',
+      'montantEstime',
+      'budgetEstime',
+      'delaiRealisation',
+    ],
+    Consultation_Prestataire_de_Lancement: [
+      'typologidemarche',
+      'garantie',
+      'montantEstime',
+      'budgetEstime',
+      'delaiRealisation',
+    ],
+    Consultation_Procurement_de_Lancement: [
+      'typologidemarche',
+      'garantie',
+      'montantEstime',
+      'budgetEstime',
+      'delaiRealisation',
+    ],
+    APPEL_OFFRE_ATTRIBUTION: [
+      'nomFournisseur',
+      'montantContrat',
+      'dureeContrat',
+      'delaiRealisation',
+      'typologidemarche',
+      'garantie',
+      'experiencefournisseur',
+      'nombredeprojetssimilaires',
+      'notationinterne',
+      'chiffreaffaire',
+      'situationfiscale',
+      'fournisseurblacklist',
+      'typefournisseur',
+      'fournisseurEtrangerInstallationPermanente', // Ajoutez ceci si nécessaire pour ce type
+      'originePaysNonDoubleImposition'
+
+    ],
+    Consultation_Prestataire_dAttribution: [
+      'nomFournisseur',
+      'montantContrat',
+      'dureeContrat',
+      'delaiRealisation',
+      'typologidemarche',
+      'garantie',
+      'experiencefournisseur',
+      'nombredeprojetssimilaires',
+      'notationinterne',
+      'chiffreaffaire',
+      'situationfiscale',
+      'fournisseurblacklist',
+      'typefournisseur',
+      'fournisseurEtrangerInstallationPermanente', // Ajoutez ceci si nécessaire pour ce type
+      'originePaysNonDoubleImposition',] ,
+    Consultation_Procurement_dAttribution: [
+      'nomFournisseur',
+      'montantContrat',
+      'dureeContrat',
+      'delaiRealisation',
+      'typologidemarche',
+      'garantie',
+      'experiencefournisseur',
+      'nombredeprojetssimilaires',
+      'notationinterne',
+      'chiffreaffaire',
+      'situationfiscale',
+      'fournisseurblacklist',
+      'typefournisseur',
+      'fournisseurEtrangerInstallationPermanente', // Ajoutez ceci si nécessaire pour ce type
+      'originePaysNonDoubleImposition',],
+    GRE_A_GRE: ['montantEstime',
+      'budgetEstime',
+      'dureeContrat',
+      'delaiRealisation'],
+    AVENANT: [
+      'numeroContrat',
+      'dateSignatureContrat',
+      'dureeContrat',
+      'dateExpirationContrat',
+      'montantContrat',
+      'objetAvenant',
+      'montantAvenant',
+      'dureeAvenant',
+      'garantie',
+    ],
+    RECOURS: [],
   };
 
   champLabels: { [key: string]: string } = {
-    fournisseurEtranger: 'Fournisseur Étranger',
-    fournisseurEtrangerInstallationPermanente: "Installation Permanente à l'Étranger",
-    originePaysNonDoubleImposition: 'Origine - Pays sans Double Imposition',
+
     montantEstime: 'Montant Estimé',
     budgetEstime: 'Budget Estimé',
     dureeContrat: 'Durée du Contrat',
-    dureeRealisation: 'Durée de Réalisation',
+    delaiRealisation: 'delai de Réalisation',
     nomFournisseur: 'Nom du Fournisseur',
     montantContrat: 'Montant du Contrat',
     numeroContrat: 'Numéro du Contrat',
@@ -97,8 +174,23 @@ export class EditDossierComponent implements OnInit, OnDestroy {
     dateExpirationContrat: 'Date d’Expiration',
     objetAvenant: 'Objet de l’Avenant',
     montantAvenant: 'Montant de l’Avenant',
-    dureeAvenant: 'Durée de l’Avenant'
+    dureeAvenant: 'Durée de l’Avenant',
+    typologidemarche: 'Typologie du marché',
+    situationfiscale: 'Situation Fiscale',
+    fournisseurblacklist: 'Fournisseur Blacklisté',
+    typefournisseur: 'Type de Fournisseur',
+    garantie: 'Garantie',
+    experiencefournisseur: 'Expérience du Fournisseur',
+    nombredeprojetssimilaires: 'Nombre de Projets Similaires',
+    notationinterne: 'Notation Interne',
+    chiffreaffaire: "Chiffre d'Affaires",
   };
+
+  typologidemarcheOptions: string[] = ['Service', 'Fournitures', 'Travaux' , 'Etude'];
+  garantieOptions: string[] = ['Aucune', 'Retenu', 'Caution'];
+  situationFiscaleOptions: string[] = ['Conforme', 'Non conforme'];
+  blacklistOptions: string[] = ['Oui', 'Non'];
+  typefournisseurOptions: string[] = ['Local', 'ETRANGER'];
 
   constructor(
     private route: ActivatedRoute,
@@ -116,12 +208,15 @@ export class EditDossierComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.dossierForm = this.fb.group({
-      numeroDossier: ['', Validators.required],
-      intitule: ['', Validators.required],
-      typePassation: ['', Validators.required],
-      fichiers: this.fb.array([]),
-      nomFichierSuppl: ['']
+      this.dossierForm = this.fb.group({
+        numeroDossier: ['', Validators.required],
+        intitule: ['', Validators.required],
+        typePassation: ['', Validators.required],
+        fichiers: this.fb.array([]),
+        nomFichierSuppl: [''],
+        typefournisseur: [''],
+        fournisseurEtrangerInstallationPermanente: [false], // Initialisation
+        originePaysNonDoubleImposition: [false], // Initialisatio
     });
 
     forkJoin({
@@ -211,7 +306,7 @@ export class EditDossierComponent implements OnInit, OnDestroy {
   }
 
   isCheckbox(champ: string): boolean {
-    return ['fournisseurEtranger', 'fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'].includes(champ);
+    return ['fournisseurEtrangerInstallationPermanente', 'originePaysNonDoubleImposition'].includes(champ);
   }
 
   ajouterFichierSupplementaire() {
@@ -241,7 +336,14 @@ export class EditDossierComponent implements OnInit, OnDestroy {
       this.dossierForm.updateValueAndValidity();
     }
   }
-
+  onTypeFournisseurChangeEdit(type: string) {
+    if (type === 'Local') {
+      this.dossierForm.patchValue({
+        fournisseurEtrangerInstallationPermanente: false,
+        originePaysNonDoubleImposition: false
+      });
+    }
+  }
   onSubmit() {
     if (this.dossierForm.invalid) {
       console.log('Form is INVALID. Errors:', this.dossierForm.errors);
@@ -299,7 +401,7 @@ export class EditDossierComponent implements OnInit, OnDestroy {
     this.dossierService.updateDossier(parseInt(this.dossierId!, 10), formData).subscribe({
       next: () => {
         alert('Dossier mis à jour avec succès !');
-        this.router.navigate(['/dossiers']);
+        this.router.navigate(['/dossier/dossierAttribution']);
       },
       error: (err) => {
         console.error('Erreur lors de la mise à jour du dossier', err);

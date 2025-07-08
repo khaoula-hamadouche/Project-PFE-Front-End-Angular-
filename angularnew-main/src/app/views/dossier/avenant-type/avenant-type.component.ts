@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit, Renderer2 } from "@angular/core";
 import { AgGridAngular } from "ag-grid-angular";
 import { DossierService } from "../../../service/dossier.service";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule } from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {
   CardBodyComponent, CardComponent, ColComponent, RowComponent, TextColorDirective
 } from "@coreui/angular";
@@ -27,7 +27,7 @@ ModuleRegistry.registerModules([
   standalone: true,
   imports: [
     AgGridAngular, CommonModule, TextColorDirective, CardComponent,
-    CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule
+    CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, FormsModule
   ],
 })
 export class AvenantTypeComponent implements OnInit, AfterViewInit {
@@ -84,6 +84,28 @@ export class AvenantTypeComponent implements OnInit, AfterViewInit {
     },
     {
       headerName: 'Actions',
+      field: 'resultat',
+      cellRenderer: (params: ICellRendererParams) => {
+        const button = document.createElement('button');
+        button.className = 'btn btn-warning btn-sm';
+        button.innerText = '📝 Details';
+        const dossierId = params.data?.id;
+
+        button.addEventListener('click', () => {
+          if (dossierId) {
+            this.router.navigate([`/dossier/DossierDetails/${dossierId}`]);
+          }
+        });
+
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(button);
+        return fragment;
+      },
+      width: 200,
+    },
+
+    {
+      headerName: 'Actions',
       cellRenderer: (params: ICellRendererParams) => {
         const div = document.createElement('div');
 
@@ -122,11 +144,9 @@ export class AvenantTypeComponent implements OnInit, AfterViewInit {
 getEtatTextColorStyle(params: any): any {
   if (params.value === 'EN_ATTENTE') {
     return { 'color': '#ffeb3b', 'font-weight': 'bold' };  // Jaune
-  } else if (params.value === 'VALIDE') {
+  } else if (params.value === 'TRAITE') {
     return { 'color': '#4caf50', 'font-weight': 'bold' };  // Vert
-  } else if (params.value === 'REJETE') {
-    return { 'color': '#f44336', 'font-weight': 'bold' };  // Rouge
-  }else if (params.value === 'EN_TRAITEMENT') {
+  } else if (params.value === 'EN_TRAITEMENT') {
     return { 'color': '#0d0795', 'font-weight': 'bold' };  // Rouge
   }
   return {};
@@ -255,5 +275,13 @@ getEtatTextColorStyle(params: any): any {
 
   onGridReady(params: GridReadyEvent) {
     params.api.sizeColumnsToFit();
+  }
+  selectedType: string = '';
+
+  onTypeChange(): void {
+    if (this.selectedType) {
+      const encodedType = encodeURIComponent(this.selectedType);
+      this.router.navigate([`/dossier/${encodedType}`]);
+    }
   }
 }

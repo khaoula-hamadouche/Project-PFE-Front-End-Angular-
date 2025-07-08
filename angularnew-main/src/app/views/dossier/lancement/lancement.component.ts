@@ -50,6 +50,8 @@ export class LancementComponent implements OnInit, AfterViewInit {
     { headerName: 'Delai Realisation', field: 'delaiRealisation', sortable: true, filter: true, resizable: true },
     { headerName: 'Typologie de marche', field: 'typologidemarche', sortable: true, filter: true, resizable: true },
     { headerName: 'Garantie', field: 'garantie', sortable: true, filter: true, resizable: true },
+
+
     {
       headerName: 'Fichiers',
       field: 'fileDetails',
@@ -68,27 +70,19 @@ export class LancementComponent implements OnInit, AfterViewInit {
       },
       width: 250,
     },
+
     {
-      headerName: 'Action',
-      field: 'action',
+      headerName: 'Actions',
+      field: 'resultat',
       cellRenderer: (params: ICellRendererParams) => {
         const button = document.createElement('button');
-        button.className = 'btn btn-success btn-sm';
-        button.innerText = '🛠️ Traitement';
+        button.className = 'btn btn-warning btn-sm';
+        button.innerText = '📝 Details';
         const dossierId = params.data?.id;
 
         button.addEventListener('click', () => {
           if (dossierId) {
-            // Appeler le service pour changer l'état AVANT de naviguer
-            this.dossierService.changerEtatDossier(dossierId, 'EN_TRAITEMENT').subscribe({
-              next: () => {
-                // Quand l'état est changé avec succès, on navigue
-                this.router.navigate([`/dossier/traitement/${dossierId}`]);
-              },
-              error: (error) => {
-                console.error('Erreur lors du changement d\'état', error);
-              }
-            });
+            this.router.navigate([`/dossier/DossierDetails/${dossierId}`]);
           }
         });
 
@@ -117,10 +111,8 @@ export class LancementComponent implements OnInit, AfterViewInit {
   getEtatTextColorStyle(params: any): any {
     if (params.value === 'EN_ATTENTE') {
       return { 'color': '#ffeb3b', 'font-weight': 'bold' };  // Jaune
-    } else if (params.value === 'VALIDE') {
+    } else if (params.value === 'TRAITE') {
       return { 'color': '#4caf50', 'font-weight': 'bold' };  // Vert
-    } else if (params.value === 'REJETE') {
-      return { 'color': '#f44336', 'font-weight': 'bold' };  // Rouge
     }else if (params.value === 'EN_TRAITEMENT') {
       return { 'color': '#0d0795', 'font-weight': 'bold' };  // Rouge
     }
@@ -143,6 +135,8 @@ export class LancementComponent implements OnInit, AfterViewInit {
           chargeDossier: dossier.chargeDossier?.name || 'N/A',
           typeLancement: dossier.typePassation, // Utiliser le type de passation comme type de lancement ici
           etat: dossier.etat,
+          resultats: dossier.resultats?.id || 'N/A',
+
           ...this.extractLancementSpecificDetails(dossier.details, dossier.typePassation),
         }));
         this.loading = false;

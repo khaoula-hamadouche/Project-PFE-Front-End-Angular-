@@ -6,13 +6,12 @@
   id="sidebar1"
   visible
 >
-<c-sidebar-header class="border-bottom">
-  <c-sidebar-brand [routerLink]="[]">
-    <!-- Charger le SVG via l'élément <object> -->
-    <object data="../../../assets/brand/sarpi.svg" type="image/svg+xml" class="sidebar-brand-full" height="32"></object>
-    <object data="../../../assets/brand/sarpi.svg" type="image/svg+xml" class="sidebar-brand-narrow" height="32"></object>
-  </c-sidebar-brand>
-</c-sidebar-header>
+  <c-sidebar-header class="border-bottom">
+    <c-sidebar-brand [routerLink]="[]" class="d-flex justify-content-center">
+      <img src="../../../assets/images/logo/sarpi-logo.png" alt="Sarpi Logo" class="sidebar-brand-full" height="32">
+      <img src="../../../assets/images/logo/sarpi-logo.png" alt="Sarpi Logo" class="sidebar-brand-narrow" height="32" style="display: none;">
+    </c-sidebar-brand>
+  </c-sidebar-header>
 
 
   <ng-scrollbar #scrollbar="ngScrollbar" (updated)="onScrollbarUpdate(scrollbar.state)" class="overflow" pointerEventsMethod="scrollbar" visibility="hover">
@@ -40,6 +39,6 @@
       <router-outlet />
     </c-container>
   </div>
-  
+
 </div>
 

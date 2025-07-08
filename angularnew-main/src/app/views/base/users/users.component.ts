@@ -86,7 +86,7 @@ import { IconDirective } from "@coreui/icons-angular";
 
   standalone: true,
 
-  imports: [AgGridAngular, CommonModule, TextColorDirective, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, IconDirective],
+  imports: [AgGridAngular, CommonModule, CardComponent, CardBodyComponent, RowComponent, ColComponent, ReactiveFormsModule, IconDirective],
 
   templateUrl: './users.component.html',
 
@@ -142,7 +142,7 @@ export class usersComponent implements AfterViewInit {
 
   paginationPageSize = 10;
 
-  paginationPageSizeSelector = [1, 5, 10];
+  paginationPageSizeSelector = [1, 5, 10 ,15];
 
 
 
